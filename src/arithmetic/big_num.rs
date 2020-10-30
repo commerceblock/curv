@@ -164,6 +164,13 @@ impl ConvertFrom<BigInt> for u64 {
     }
 }
 
+impl<'a> ConvertFrom<&'a [u8]> for NumBigInt {
+    fn _from(other: &&'a [u8]) -> NumBigInt {
+        BigInt::from_bytes_le(Sign::Plus, other)
+    }
+}
+
+
 #[cfg(test)]
 mod tests {
     use super::Converter;

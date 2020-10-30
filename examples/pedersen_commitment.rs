@@ -1,4 +1,5 @@
 use curv::BigInt;
+use curv::arithmetic::traits::ConvertFrom;
 
 /// Pedesen Commitment:
 /// compute c = mG + rH
@@ -29,7 +30,7 @@ pub fn ped_com(message: &BigInt) {
 fn main() {
     let message = "commit me!";
     let message_bytes = message.as_bytes();
-    let _message_bn = BigInt::from(message_bytes);
+    let _message_bn = BigInt::_from(&message_bytes);
     #[cfg(feature = "ecc")]
     ped_com(&_message_bn);
 }
