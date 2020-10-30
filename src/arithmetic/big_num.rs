@@ -17,14 +17,13 @@
 use super::rand::rngs::OsRng;
 use super::rand::RngCore;
 use super::traits::{
-    BitManipulation, ConvertFrom, Converter, Modulo, NumberTests, Samplable, ZeroizeBN, EGCD,
+    ConvertFrom, Converter, Modulo, NumberTests, Samplable, ZeroizeBN, EGCD,
 };
 use num::BigInt as NumBigInt;
-use num::bigint::ToBigInt;
+use num::bigint::Sign;
 use num::Integer;
-use num_traits::{Num, Zero};
+use num_traits::{Num, ToPrimitive, Zero};
 
-use std::borrow::Borrow;
 use std::ptr;
 use std::sync::atomic;
 
@@ -39,7 +38,7 @@ impl ZeroizeBN for NumBigInt {
 }
 
 impl Converter for NumBigInt {
-    // Ignoring sign here.
+    /// Sign ignored here
     fn to_vec(value: &NumBigInt) -> Vec<u8> {
         let bytes: Vec<u8> = value.to_bytes_be().1;
         bytes
@@ -54,7 +53,6 @@ impl Converter for NumBigInt {
     }
 }
 
-// TODO: write unit test
 impl Modulo for NumBigInt {
     fn mod_pow(base: &Self, exponent: &Self, modulus: &Self) -> Self {
         base.modpow(exponent, modulus)
@@ -80,72 +78,73 @@ impl Modulo for NumBigInt {
         a.modpow(&BigInt::from(-1), modulus) // !! Not implemented for num::BigInt library
     }
 }
-//
-// impl Samplable for Mpz {
-//     fn sample_below(upper: &Self) -> Self {
-//         assert!(*upper > Mpz::zero());
-//
-//         let bits = upper.bit_length();
-//         loop {
-//             let n = Self::sample(bits);
-//             if n < *upper {
-//                 return n;
-//             }
-//         }
-//     }
-//
-//     fn sample_range(lower: &Self, upper: &Self) -> Self {
-//         assert!(upper > lower);
-//         lower + Self::sample_below(&(upper - lower))
-//     }
-//
-//     fn strict_sample_range(lower: &Self, upper: &Self) -> Self {
-//         assert!(upper > lower);
-//         loop {
-//             let n = lower + Self::sample_below(&(upper - lower));
-//             if n > *lower && n < *upper {
-//                 return n;
-//             }
-//         }
-//     }
-//
-//     fn sample(bit_size: usize) -> Self {
-//         let mut rng = OsRng::new().unwrap();
-//         let bytes = (bit_size - 1) / 8 + 1;
-//         let mut buf: Vec<u8> = vec![0; bytes];
-//         rng.fill_bytes(&mut buf);
-//         Self::from(&*buf) >> (bytes * 8 - bit_size)
-//     }
-//
-//     fn strict_sample(bit_size: usize) -> Self {
-//         loop {
-//             let n = Self::sample(bit_size);
-//             if n.bit_length() == bit_size {
-//                 return n;
-//             }
-//         }
-//     }
-// }
-//
-// impl NumberTests for Mpz {
-//     fn is_zero(me: &Self) -> bool {
-//         me.is_zero()
-//     }
-//     fn is_even(me: &Self) -> bool {
-//         me.is_multiple_of(&Mpz::from(2))
-//     }
-//     fn is_negative(me: &Self) -> bool {
-//         *me < Mpz::from(0)
-//     }
-// }
-//
-// impl EGCD for Mpz {
-//     fn egcd(a: &Self, b: &Self) -> (Self, Self, Self) {
-//         a.gcdext(b)
-//     }
-// }
-//
-// impl BitManipulation for Mpz {
+
+impl Samplable for NumBigInt {
+    fn sample_below(upper: &Self) -> Self {
+        assert!(*upper > NumBigInt::zero());
+
+        let bits = upper.bits() as usize;
+        loop {
+            let n = Self::sample(bits);
+            if n < *upper {
+                return n;
+            }
+        }
+    }
+
+    fn sample_range(lower: &Self, upper: &Self) -> Self {
+        assert!(upper > lower);
+        lower + Self::sample_below(&(upper - lower))
+    }
+
+    fn strict_sample_range(lower: &Self, upper: &Self) -> Self {
+        assert!(upper > lower);
+        loop {
+            let n = lower + Self::sample_below(&(upper - lower));
+            if n > *lower && n < *upper {
+                return n;
+            }
+        }
+    }
+
+    fn sample(bit_size: usize) -> Self {
+        let mut rng = OsRng::new().unwrap();
+        let bytes = (bit_size - 1) / 8 + 1;
+        let mut buf: Vec<u8> = vec![0; bytes];
+        rng.fill_bytes(&mut buf);
+        Self::from_bytes_le(Sign::Plus, &*buf) >> (bytes * 8 - bit_size)
+    }
+
+    fn strict_sample(bit_size: usize) -> Self {
+        loop {
+            let n = Self::sample(bit_size);
+            if (n.bits() as usize) == bit_size {
+                return n;
+            }
+        }
+    }
+}
+
+impl NumberTests for NumBigInt {
+    fn is_zero(me: &Self) -> bool {
+        me.is_zero()
+    }
+    fn is_even(me: &Self) -> bool {
+        me.is_multiple_of(&NumBigInt::from(2))
+    }
+    fn is_negative(me: &Self) -> bool {
+        *me < NumBigInt::from(0)
+    }
+}
+
+impl EGCD for NumBigInt {
+    fn egcd(a: &Self, b: &Self) -> (Self, Self, Self) {
+        let extgcd = a.extended_gcd_lcm(b);
+        (extgcd.0.gcd, extgcd.0.x, extgcd.0.y)
+    }
+}
+
+// impl BitManipulation for BigInt {
 //     fn set_bit(self: &mut Self, bit: usize, bit_val: bool) {
 //         if bit_val {
 //             self.setbit(bit);
@@ -158,13 +157,12 @@ impl Modulo for NumBigInt {
 //         self.tstbit(bit)
 //     }
 // }
-//
-// impl ConvertFrom<Mpz> for u64 {
-//     fn _from(x: &Mpz) -> u64 {
-//         let opt_x: Option<u64> = x.into();
-//         opt_x.unwrap()
-//     }
-// }
+
+impl ConvertFrom<BigInt> for u64 {
+    fn _from(x: &BigInt) -> u64 {
+        x.to_u64().unwrap()
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -172,163 +170,136 @@ mod tests {
     use super::Modulo;
     use super::Samplable;
     use super::BigInt;
+    use super::EGCD;
 
     use std::cmp;
-    use std::convert::{From, Into};
+    use std::convert::From;
 
     use crate::arithmetic::traits::ZeroizeBN;
 
+
     #[test]
-    fn test_zero() {
-        let mut bn10 = BigInt::from(10);
-        println!("bn10: {:?}", bn10);
+    fn egcd_test() {
+        let num1 = BigInt::from(360);
+        let num2 = BigInt::from(1290);
+        assert_eq!(EGCD::egcd(&num1, &num2),
+            (BigInt::from(30), BigInt::from(18), BigInt::from(-5)));
+    }
+
+    #[test]
+    fn zeroize_test() {
+        let bn10 = BigInt::from(10);
         let mut bn0 = bn10.clone();
         bn0.zeroize_bn();
-        println!("bn0: {:?}", bn0);
-        let bnx = bn0+bn10.clone();
-        println!("bn0 + bn10: {:?}", bnx);
-        let bny = bn10*BigInt::from(2);
-        println!("bn0 + bn10: {:?}", bny);
+        assert_eq!(bn0.clone()+bn10.clone(), bn10.clone());
+        assert_eq!(bn0.clone()-bn10.clone(), -bn10.clone());
     }
 
     #[test]
-    fn test_to_vec_big_int_big_num() {
-        println!("\nbig_gmp");
-        let num = BigInt::from(1);
-        println!("num: {:?}", BigInt::to_vec(&num));
-        println!("hex: {:?}", BigInt::to_hex(&num));
-        
-        let num = BigInt::from(-10);
-        println!("num: {:?}", BigInt::to_vec(&num));
-        println!("hex: {:?}", BigInt::to_hex(&num));
-        
-
-        let num = BigInt::from(-10);
-        println!("num: {:?}", BigInt::to_vec(&num));
-        println!("hex: {:?}", BigInt::to_hex(&num));
-        
-
-        let num = BigInt::from(398578);
-        println!("num: {:?}", BigInt::to_vec(&num));
-        println!("hex: {:?}", BigInt::to_hex(&num));
-        println!("num: {:?}", num.sign());
-        println!("from hex: {:?}", BigInt::from_hex(&BigInt::to_hex(&num)));
-        
-
-        let num = BigInt::from(-9398578);
-        println!("num: {:?}", BigInt::to_vec(&num));
-        println!("hex: {:?}", BigInt::to_hex(&num));
-        println!("num: {:?}", num.sign());
-        println!("from hex: {:?}", BigInt::from_hex(&BigInt::to_hex(&num)));
-        
-
+    #[should_panic]
+    fn sample_below_zero_test() {
+        BigInt::sample_below(&BigInt::from(-1));
     }
 
-    // #[test]
-    // #[should_panic]
-    // fn sample_below_zero_test() {
-    //     Mpz::sample_below(&Mpz::from(-1));
-    // }
-    //
-    // #[test]
-    // fn sample_below_test() {
-    //     let upper_bound = Mpz::from(10);
-    //
-    //     for _ in 1..100 {
-    //         let r = Mpz::sample_below(&upper_bound);
-    //         assert!(r < upper_bound);
-    //     }
-    // }
-    //
-    // #[test]
-    // #[should_panic]
-    // fn invalid_range_test() {
-    //     Mpz::sample_range(&Mpz::from(10), &Mpz::from(9));
-    // }
-    //
-    // #[test]
-    // fn sample_range_test() {
-    //     let upper_bound = Mpz::from(10);
-    //     let lower_bound = Mpz::from(5);
-    //
-    //     for _ in 1..100 {
-    //         let r = Mpz::sample_range(&lower_bound, &upper_bound);
-    //         assert!(r < upper_bound && r >= lower_bound);
-    //     }
-    // }
-    //
-    // #[test]
-    // fn strict_sample_range_test() {
-    //     let len = 249;
-    //
-    //     for _ in 1..100 {
-    //         let a = Mpz::sample(len);
-    //         let b = Mpz::sample(len);
-    //         let lower_bound = cmp::min(a.clone(), b.clone());
-    //         let upper_bound = cmp::max(a.clone(), b.clone());
-    //
-    //         let r = Mpz::strict_sample_range(&lower_bound, &upper_bound);
-    //         assert!(r < upper_bound && r >= lower_bound);
-    //     }
-    // }
-    //
-    // #[test]
-    // fn strict_sample_test() {
-    //     let len = 249;
-    //
-    //     for _ in 1..100 {
-    //         let a = Mpz::strict_sample(len);
-    //         assert_eq!(a.bit_length(), len);
-    //     }
-    // }
-    //
-    // //test mod_sub: a-b mod n where a-b >0
-    // #[test]
-    // fn test_mod_sub_modulo() {
-    //     let a = Mpz::from(10);
-    //     let b = Mpz::from(5);
-    //     let modulo = Mpz::from(3);
-    //     let res = Mpz::from(2);
-    //     assert_eq!(res, Mpz::mod_sub(&a, &b, &modulo));
-    // }
-    //
-    // //test mod_sub: a-b mod n where a-b <0
-    // #[test]
-    // fn test_mod_sub_negative_modulo() {
-    //     let a = Mpz::from(5);
-    //     let b = Mpz::from(10);
-    //     let modulo = Mpz::from(3);
-    //     let res = Mpz::from(1);
-    //     assert_eq!(res, Mpz::mod_sub(&a, &b, &modulo));
-    // }
-    //
-    // #[test]
-    // fn test_mod_mul() {
-    //     let a = Mpz::from(4);
-    //     let b = Mpz::from(5);
-    //     let modulo = Mpz::from(3);
-    //     let res = Mpz::from(2);
-    //     assert_eq!(res, Mpz::mod_mul(&a, &b, &modulo));
-    // }
-    //
-    // #[test]
-    // fn test_mod_pow() {
-    //     let a = Mpz::from(2);
-    //     let b = Mpz::from(3);
-    //     let modulo = Mpz::from(3);
-    //     let res = Mpz::from(2);
-    //     assert_eq!(res, Mpz::mod_pow(&a, &b, &modulo));
-    // }
-    //
-    // #[test]
-    // fn test_to_hex() {
-    //     let b = Mpz::from(11);
-    //     assert_eq!("b", b.to_hex());
-    // }
-    //
-    // #[test]
-    // fn test_from_hex() {
-    //     let a = Mpz::from(11);
-    //     assert_eq!(Mpz::from_hex(&a.to_hex()), a);
-    // }
+    #[test]
+    fn sample_below_test() {
+        let upper_bound = BigInt::from(10);
+
+        for _ in 1..100 {
+            let r = BigInt::sample_below(&upper_bound);
+            assert!(r < upper_bound);
+        }
+    }
+
+    #[test]
+    #[should_panic]
+    fn invalid_range_test() {
+        BigInt::sample_range(&BigInt::from(10), &BigInt::from(9));
+    }
+
+    #[test]
+    fn sample_range_test() {
+        let upper_bound = BigInt::from(10);
+        let lower_bound = BigInt::from(5);
+
+        for _ in 1..100 {
+            let r = BigInt::sample_range(&lower_bound, &upper_bound);
+            assert!(r < upper_bound && r >= lower_bound);
+        }
+    }
+
+    #[test]
+    fn strict_sample_range_test() {
+        let len = 249;
+
+        for _ in 1..100 {
+            let a = BigInt::sample(len);
+            let b = BigInt::sample(len);
+            let lower_bound = cmp::min(a.clone(), b.clone());
+            let upper_bound = cmp::max(a.clone(), b.clone());
+
+            let r = BigInt::strict_sample_range(&lower_bound, &upper_bound);
+            assert!(r < upper_bound && r >= lower_bound);
+        }
+    }
+
+    #[test]
+    fn strict_sample_test() {
+        let len = 249;
+
+        for _ in 1..100 {
+            let a = BigInt::strict_sample(len);
+            assert_eq!(a.bits() as usize, len);
+        }
+    }
+
+    //test mod_sub: a-b mod n where a-b >0
+    #[test]
+    fn test_mod_sub_modulo() {
+        let a = BigInt::from(10);
+        let b = BigInt::from(5);
+        let modulo = BigInt::from(3);
+        let res = BigInt::from(2);
+        assert_eq!(res, BigInt::mod_sub(&a, &b, &modulo));
+    }
+
+    //test mod_sub: a-b mod n where a-b <0
+    #[test]
+    fn test_mod_sub_negative_modulo() {
+        let a = BigInt::from(5);
+        let b = BigInt::from(10);
+        let modulo = BigInt::from(3);
+        let res = BigInt::from(1);
+        assert_eq!(res, BigInt::mod_sub(&a, &b, &modulo));
+    }
+
+    #[test]
+    fn test_mod_mul() {
+        let a = BigInt::from(4);
+        let b = BigInt::from(5);
+        let modulo = BigInt::from(3);
+        let res = BigInt::from(2);
+        assert_eq!(res, BigInt::mod_mul(&a, &b, &modulo));
+    }
+
+    #[test]
+    fn test_mod_pow() {
+        let a = BigInt::from(2);
+        let b = BigInt::from(3);
+        let modulo = BigInt::from(3);
+        let res = BigInt::from(2);
+        assert_eq!(res, BigInt::mod_pow(&a, &b, &modulo));
+    }
+
+    #[test]
+    fn test_to_hex() {
+        let b = BigInt::from(11);
+        assert_eq!("b", b.to_hex());
+    }
+
+    #[test]
+    fn test_from_hex() {
+        let a = BigInt::from(11);
+        assert_eq!(BigInt::from_hex(&a.to_hex()), a);
+    }
 }

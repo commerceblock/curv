@@ -5,6 +5,9 @@
     License MIT: <https://github.com/KZen-networks/curv/blob/master/LICENSE>
 */
 
+extern crate num;
+extern crate num_traits;
+
 #[macro_use]
 extern crate serde_derive;
 
@@ -66,10 +69,8 @@ mod bls12_381_instance {
 #[cfg(feature = "ec_bls12_381")]
 pub use self::bls12_381_instance::*;
 
-#[cfg(feature = "rust-gmp")]
 pub mod arithmetic;
-#[cfg(feature = "rust-gmp")]
-pub use crate::arithmetic::big_gmp::BigInt;
+pub use crate::arithmetic::big_num::BigInt;
 
 #[cfg(feature = "ecc")]
 pub mod cryptographic_primitives;

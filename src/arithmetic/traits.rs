@@ -51,6 +51,7 @@ pub trait EGCD
 where
     Self: Sized,
 {
+    /// Given (a, b), return (g, s, t) such that g = gcd(a, b) = s*a + t*b.
     fn egcd(a: &Self, b: &Self) -> (Self, Self, Self);
 }
 

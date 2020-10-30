@@ -7,12 +7,12 @@ edition = "2018"
 crate-type = ["cdylib", "rlib"]
 
 [features]
-default = ["rust-gmp"]
-ec_secp256k1 = ["rust-gmp" ,"ecc", "secp256k1"]
-ec_ristretto = ["rust-gmp", "ecc" , "curve25519-dalek"]
-ec_ed25519 = ["rust-gmp", "ecc" , "cryptoxide"]
-ec_jubjub = ["rust-gmp", "ecc" , "pairing", "sapling-crypto"]
-ec_bls12_381 = ["rust-gmp", "ecc" , "bls12_381"]
+default = []
+ec_secp256k1 = ["ecc", "secp256k1"]
+ec_ristretto = [ "ecc" , "curve25519-dalek"]
+ec_ed25519 = [ "ecc" , "cryptoxide"]
+ec_jubjub = [ "ecc" , "pairing", "sapling-crypto"]
+ec_bls12_381 = [ "ecc" , "bls12_381"]
 ecc = []
 merkle = ["rust-crypto", "merkle-sha3"]
 
@@ -52,12 +52,6 @@ optional = true
 [dependencies.pairing]
 git = "https://github.com/omershlo/librustzcash.git"
 rev = "3e667406323430813f6dbae2a60b5a83046fa20a"
-optional = true
-
-[dependencies.rust-gmp]
-version = "0.5.0"
-features = ["serde_support"]
-git = "https://github.com/KZen-networks/rust-gmp"
 optional = true
 
 [dependencies.secp256k1]
