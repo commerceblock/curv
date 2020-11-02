@@ -11,6 +11,7 @@ use crate::BigInt;
 use crate::ErrorSS::{self, VerifyShareError};
 use crate::FE;
 use crate::GE;
+use num_traits::One;
 
 #[derive(Clone, PartialEq, Debug, Serialize, Deserialize)]
 pub struct ShamirSecretSharing {

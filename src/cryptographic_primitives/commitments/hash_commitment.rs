@@ -14,8 +14,9 @@ use crate::BigInt;
 
 use super::traits::Commitment;
 use super::SECURITY_BITS;
-use crate::arithmetic::traits::Samplable;
+use crate::arithmetic::traits::{Samplable, Converter};
 use sha3::{Digest, Sha3_256};
+
 //TODO:  using the function with BigInt's as input instead of string's makes it impossible to commit to empty message or use empty randomness
 impl Commitment<BigInt> for HashCommitment {
     fn create_commitment_with_user_defined_randomness(
@@ -23,11 +24,11 @@ impl Commitment<BigInt> for HashCommitment {
         blinding_factor: &BigInt,
     ) -> BigInt {
         let mut digest = Sha3_256::new();
-        let bytes_message: Vec<u8> = message.into();
+        let bytes_message: Vec<u8> = message.to_vec();
         digest.input(&bytes_message);
-        let bytes_blinding_factor: Vec<u8> = blinding_factor.into();
+        let bytes_blinding_factor: Vec<u8> = blinding_factor.to_vec();
         digest.input(&bytes_blinding_factor);
-        BigInt::from(digest.result().as_ref())
+        BigInt::from_vec(digest.result().as_ref())
     }
 
     fn create_commitment(message: &BigInt) -> (BigInt, BigInt) {
@@ -45,9 +46,10 @@ mod tests {
     use super::Commitment;
     use super::HashCommitment;
     use super::SECURITY_BITS;
-    use crate::arithmetic::traits::Samplable;
+    use crate::arithmetic::traits::{Samplable, Converter};
     use crate::BigInt;
     use sha3::{Digest, Sha3_256};
+    use num_traits::{One, Zero};
 
     #[test]
     fn test_bit_length_create_commitment() {
@@ -100,11 +102,11 @@ mod tests {
             &message,
             &BigInt::zero(),
         );
-        let message2: Vec<u8> = (&message).into();
+        let message2: Vec<u8> = (&message).to_vec();
         digest.input(&message2);
-        let bytes_blinding_factor: Vec<u8> = (&BigInt::zero()).into();
+        let bytes_blinding_factor: Vec<u8> = (&BigInt::zero()).to_vec();
         digest.input(&bytes_blinding_factor);
-        let hash_result = BigInt::from(digest.result().as_ref());
+        let hash_result = BigInt::from_vec(digest.result().as_ref());
         assert_eq!(&commitment, &hash_result);
     }
 }

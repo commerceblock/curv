@@ -36,6 +36,7 @@ use std::ops::{Add, Mul};
 use std::ptr;
 use std::sync::{atomic, Once};
 use zeroize::Zeroize;
+use num_traits::Num;
 
 #[cfg(feature = "merkle")]
 use crypto::digest::Digest;
@@ -259,7 +260,7 @@ impl<'de> Visitor<'de> for Secp256k1ScalarVisitor {
     }
 
     fn visit_str<E: de::Error>(self, s: &str) -> Result<Secp256k1Scalar, E> {
-        let v = BigInt::from_hex(s);
+        let v = BigInt::from_str_radix(s, 16).expect("Failed in serde");
         Ok(ECScalar::from(&v))
     }
 }

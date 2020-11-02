@@ -26,7 +26,7 @@ impl Hash for HSha256 {
         }
 
         let result_hex = hasher.result();
-        BigInt::from(&result_hex[..])
+        BigInt::from_vec(&result_hex[..])
     }
 
     fn create_hash_from_ge(ge_vec: &[&GE]) -> FE {
@@ -36,7 +36,7 @@ impl Hash for HSha256 {
         }
 
         let result_hex = hasher.result();
-        let result = BigInt::from(&result_hex[..]);
+        let result = BigInt::from_vec(&result_hex[..]);
         ECScalar::from(&result)
     }
 
@@ -44,7 +44,7 @@ impl Hash for HSha256 {
         let mut hasher = Sha256::new();
         hasher.input(byte_slice);
         let result_hex = hasher.result();
-        BigInt::from(&result_hex[..])
+        BigInt::from_vec(&result_hex[..])
     }
 }
 
@@ -87,11 +87,9 @@ mod tests {
         );
 
         // 256 bit message
-        let result: BigInt = HSha256::create_hash(&vec![&BigInt::from_str_radix(
+        let result: BigInt = HSha256::create_hash(&vec![&BigInt::from_hex(
             "09fc1accc230a205e4a208e64a8f204291f581a12756392da4b8c0cf5ef02b95",
-            16,
-        )
-        .unwrap()]);
+        )]);
         assert_eq!(
             result.to_str_radix(16),
             "4f44c1c7fbebb6f9601829f3897bfd650c56fa07844be76489076356ac1886a4"
@@ -99,8 +97,8 @@ mod tests {
 
         // 2x128 bit messages
         let result: BigInt = HSha256::create_hash(&vec![
-            &BigInt::from_str_radix("09fc1accc230a205e4a208e64a8f2042", 16).unwrap(),
-            &BigInt::from_str_radix("91f581a12756392da4b8c0cf5ef02b95", 16).unwrap(),
+            &BigInt::from_hex("09fc1accc230a205e4a208e64a8f2042"),
+            &BigInt::from_hex("91f581a12756392da4b8c0cf5ef02b95"),
         ]);
         assert_eq!(
             result.to_str_radix(16),
@@ -108,7 +106,7 @@ mod tests {
         );
 
         // 512 bit message
-        let result: BigInt = HSha256::create_hash(&vec![&BigInt::from_str_radix("5a86b737eaea8ee976a0a24da63e7ed7eefad18a101c1211e2b3650c5187c2a8a650547208251f6d4237e661c7bf4c77f335390394c37fa1a9f9be836ac28509", 16).unwrap()]);
+        let result: BigInt = HSha256::create_hash(&vec![&BigInt::from_hex("5a86b737eaea8ee976a0a24da63e7ed7eefad18a101c1211e2b3650c5187c2a8a650547208251f6d4237e661c7bf4c77f335390394c37fa1a9f9be836ac28509")]);
         assert_eq!(
             result.to_str_radix(16),
             "42e61e174fbb3897d6dd6cef3dd2802fe67b331953b06114a65c772859dfc1aa"

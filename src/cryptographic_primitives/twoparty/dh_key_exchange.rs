@@ -91,6 +91,7 @@ mod tests {
     use crate::elliptic::curves::traits::ECScalar;
     use crate::BigInt;
     use crate::{FE, GE};
+    use num_traits::One;
 
     #[test]
     fn test_dh_key_exchange_random_shares() {

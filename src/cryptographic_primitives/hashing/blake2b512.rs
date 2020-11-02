@@ -19,7 +19,7 @@ impl Blake {
             digest.update(&BigInt::to_vec(value));
         }
 
-        BigInt::from(digest.finalize().as_ref())
+        BigInt::from_vec(digest.finalize().as_ref())
     }
 
     pub fn create_hash_from_ge(ge_vec: &[&GE], persona: &[u8]) -> FE {
@@ -30,7 +30,7 @@ impl Blake {
             digest.update(&value.pk_to_key_slice());
         }
 
-        let result = BigInt::from(digest.finalize().as_ref());
+        let result = BigInt::from_vec(digest.finalize().as_ref());
         ECScalar::from(&result)
     }
 }
@@ -42,6 +42,7 @@ mod tests {
     use crate::elliptic::curves::traits::ECScalar;
     use crate::BigInt;
     use crate::GE;
+    use num_traits::{One, Zero};
 
     #[test]
     // Very basic test here, TODO: suggest better testing

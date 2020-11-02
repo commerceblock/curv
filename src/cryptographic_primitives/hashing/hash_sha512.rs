@@ -26,7 +26,7 @@ impl Hash for HSha512 {
         }
 
         let result_hex = hasher.result();
-        BigInt::from(&result_hex[..])
+        BigInt::from_vec(&result_hex[..])
     }
 
     fn create_hash_from_ge(ge_vec: &[&GE]) -> FE {
@@ -36,7 +36,7 @@ impl Hash for HSha512 {
         }
 
         let result_hex = hasher.result();
-        let result = BigInt::from(&result_hex[..]);
+        let result = BigInt::from_vec(&result_hex[..]);
         ECScalar::from(&result)
     }
 
@@ -44,7 +44,7 @@ impl Hash for HSha512 {
         let mut hasher = Sha512::new();
         hasher.input(byte_slice);
         let result_hex = hasher.result();
-        BigInt::from(&result_hex[..])
+        BigInt::from_vec(&result_hex[..])
     }
 }
 
@@ -54,6 +54,7 @@ mod tests {
     use super::Hash;
     use crate::elliptic::curves::traits::ECPoint;
     use crate::elliptic::curves::traits::ECScalar;
+    use crate::arithmetic::traits::Converter;
     use crate::BigInt;
     use crate::GE;
 
@@ -70,16 +71,12 @@ mod tests {
 
         // 2x256 bit message
         let result: BigInt = HSha512::create_hash(&vec![
-            &BigInt::from_str_radix(
+            &BigInt::from_hex(
                 "c1ca70ae1279ba0b918157558b4920d6b7fba8a06be515170f202fafd36fb7f7",
-                16,
-            )
-            .unwrap(),
-            &BigInt::from_str_radix(
+            ),
+            &BigInt::from_hex(
                 "9d69fad745dba6150568db1e2b728504113eeac34f527fc82f2200b462ecbf5d",
-                16,
-            )
-            .unwrap(),
+            ),
         ]);
         assert_eq!(
             result.to_str_radix(16),
@@ -87,18 +84,16 @@ mod tests {
         );
 
         // 512 bit message
-        let result: BigInt = HSha512::create_hash(&vec![&BigInt::from_str_radix(
+        let result: BigInt = HSha512::create_hash(&vec![&BigInt::from_hex(
             "c1ca70ae1279ba0b918157558b4920d6b7fba8a06be515170f202fafd36fb7f79d69fad745dba6150568db1e2b728504113eeac34f527fc82f2200b462ecbf5d",
-            16,
-        )
-        .unwrap()]);
+        )]);
         assert_eq!(
             result.to_str_radix(16),
             "46e46623912b3932b8d662ab42583423843206301b58bf20ab6d76fd47f1cbbcf421df536ecd7e56db5354e7e0f98822d2129c197f6f0f222b8ec5231f3967d"
         );
 
         // 1024 bit message
-        let result: BigInt = HSha512::create_hash(&vec![&BigInt::from_str_radix("fd2203e467574e834ab07c9097ae164532f24be1eb5d88f1af7748ceff0d2c67a21f4e4097f9d3bb4e9fbf97186e0db6db0100230a52b453d421f8ab9c9a6043aa3295ea20d2f06a2f37470d8a99075f1b8a8336f6228cf08b5942fc1fb4299c7d2480e8e82bce175540bdfad7752bc95b577f229515394f3ae5cec870a4b2f8", 16).unwrap()]);
+        let result: BigInt = HSha512::create_hash(&vec![&BigInt::from_hex("fd2203e467574e834ab07c9097ae164532f24be1eb5d88f1af7748ceff0d2c67a21f4e4097f9d3bb4e9fbf97186e0db6db0100230a52b453d421f8ab9c9a6043aa3295ea20d2f06a2f37470d8a99075f1b8a8336f6228cf08b5942fc1fb4299c7d2480e8e82bce175540bdfad7752bc95b577f229515394f3ae5cec870a4b2f8")]);
         assert_eq!(
             result.to_str_radix(16),
             "a21b1077d52b27ac545af63b32746c6e3c51cb0cb9f281eb9f3580a6d4996d5c9917d2a6e484627a9d5a06fa1b25327a9d710e027387fc3e07d7c4d14c6086cc"

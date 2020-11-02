@@ -26,6 +26,7 @@ use num_traits::{Num, ToPrimitive, Zero};
 
 use std::ptr;
 use std::sync::atomic;
+use std::convert::From;
 
 pub type BigInt = NumBigInt;
 
@@ -39,13 +40,13 @@ impl ZeroizeBN for NumBigInt {
 
 impl Converter for NumBigInt {
     /// Sign ignored here
-    fn to_vec(value: &NumBigInt) -> Vec<u8> {
-        let bytes: Vec<u8> = value.to_signed_bytes_be();
+    fn to_vec(&self) -> Vec<u8> {
+        let bytes: Vec<u8> = self.to_bytes_be().1;
         bytes
     }
 
     fn from_vec(value: &[u8]) -> NumBigInt {
-        NumBigInt::from_signed_bytes_be(value)
+        NumBigInt::from_bytes_be(Sign::Plus, value)
     }
 
     fn to_hex(&self) -> String {
@@ -116,7 +117,8 @@ impl Samplable for NumBigInt {
         let bytes = (bit_size - 1) / 8 + 1;
         let mut buf: Vec<u8> = vec![0; bytes];
         rng.fill_bytes(&mut buf);
-        Self::from_bytes_le(Sign::Plus, &*buf) >> (bytes * 8 - bit_size)
+        let bn = Self::from_vec(&*buf);
+        bn >> (bytes * 8 - bit_size)
     }
 
     fn strict_sample(bit_size: usize) -> Self {
@@ -181,7 +183,7 @@ mod tests {
     use std::convert::From;
 
     use crate::arithmetic::traits::ZeroizeBN;
-
+    use num_traits::Zero;
 
     #[test]
     fn egcd_test() {
@@ -198,6 +200,17 @@ mod tests {
         bn0.zeroize_bn();
         assert_eq!(bn0.clone()+bn10.clone(), bn10.clone());
         assert_eq!(bn0.clone()-bn10.clone(), -bn10.clone());
+    }
+
+    #[test]
+    fn to_from_vec_test() {
+        let bn_0 = BigInt::zero();
+        let bn_0_vec = bn_0.to_vec();
+        assert_eq!(BigInt::from_vec(&bn_0_vec), bn_0);
+
+        let bn_rand = BigInt::sample_below(&BigInt::from(99999999));
+        let bn_rand_vec = bn_rand.to_vec();
+        assert_eq!(BigInt::from_vec(&bn_rand_vec), bn_rand);
     }
 
     #[test]

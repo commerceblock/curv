@@ -19,7 +19,7 @@ pub struct HMacSha512;
 
 impl KeyedHash for HMacSha512 {
     fn create_hmac(key: &BigInt, data: &[&BigInt]) -> BigInt {
-        let mut key_bytes: Vec<u8> = key.into();
+        let mut key_bytes: Vec<u8> = key.to_vec();
 
         let mut hmac = HmacSha256type::new_varkey(&key_bytes).expect("");
 
@@ -30,10 +30,10 @@ impl KeyedHash for HMacSha512 {
         let result = hmac.result();
         let code = result.code();
 
-        BigInt::from(code.as_slice())
+        BigInt::from_vec(code.as_slice())
     }
     fn verify(key: &BigInt, data: &[&BigInt], code_bytes: [u8; 64]) -> Result<(), ()> {
-        let key_bytes: Vec<u8> = key.into();
+        let key_bytes: Vec<u8> = key.to_vec();
 
         let mut hmac = HmacSha256type::new_varkey(&key_bytes).expect("");
 

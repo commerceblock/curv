@@ -20,7 +20,7 @@ pub trait ZeroizeBN {
     fn zeroize_bn(&mut self);
 }
 pub trait Converter {
-    fn to_vec(n: &Self) -> Vec<u8>;
+    fn to_vec(&self) -> Vec<u8>;
     fn from_vec(n: &[u8]) -> Self;
     fn to_hex(&self) -> String;
     fn from_hex(n: &str) -> Self;
