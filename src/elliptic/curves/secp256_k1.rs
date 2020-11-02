@@ -18,8 +18,6 @@
 
 use super::traits::{ECPoint, ECScalar};
 use crate::arithmetic::traits::{Converter, Modulo};
-use crate::cryptographic_primitives::hashing::hash_sha256::HSha256;
-use crate::cryptographic_primitives::hashing::traits::Hash;
 use crate::BigInt;
 use crate::ErrorKey;
 
@@ -150,11 +148,11 @@ impl ECScalar<SK> for Secp256k1Scalar {
     }
 
     fn to_big_int(&self) -> BigInt {
-        BigInt::from(&(self.fe[0..self.fe.len()]))
+        BigInt::from_vec(&(self.fe[0..self.fe.len()]))
     }
 
     fn q() -> BigInt {
-        BigInt::from(CURVE_ORDER.as_ref())
+        BigInt::from_vec(CURVE_ORDER.as_ref())
     }
 
     fn add(&self, other: &SK) -> Secp256k1Scalar {
@@ -201,7 +199,7 @@ impl ECScalar<SK> for Secp256k1Scalar {
 
     fn invert(&self) -> Secp256k1Scalar {
         let bignum = self.to_big_int();
-        let bn_inv = bignum.invert(&FE::q()).unwrap();
+        let bn_inv = Modulo::mod_inv(&bignum, &FE::q()).unwrap();
         ECScalar::from(&bn_inv)
     }
 }
@@ -261,7 +259,7 @@ impl<'de> Visitor<'de> for Secp256k1ScalarVisitor {
     }
 
     fn visit_str<E: de::Error>(self, s: &str) -> Result<Secp256k1Scalar, E> {
-        let v = BigInt::from_str_radix(s, 16).expect("Failed in serde");
+        let v = BigInt::from_hex(s);
         Ok(ECScalar::from(&v))
     }
 }
@@ -307,21 +305,21 @@ impl ECPoint<PK, SK> for Secp256k1Point {
     /// 3) call from_bytes
     fn bytes_compressed_to_big_int(&self) -> BigInt {
         let serial = self.ge.serialize();
-        BigInt::from(&serial[0..33])
+        BigInt::from_vec(&serial[0..33])
     }
 
     fn x_coor(&self) -> Option<BigInt> {
         let serialized_pk = PK::serialize_uncompressed(&self.ge);
         let x = &serialized_pk[1..serialized_pk.len() / 2 + 1];
         let x_vec = x.to_vec();
-        Some(BigInt::from(&x_vec[..]))
+        Some(BigInt::from_vec(&x_vec[..]))
     }
 
     fn y_coor(&self) -> Option<BigInt> {
         let serialized_pk = PK::serialize_uncompressed(&self.ge);
         let y = &serialized_pk[(serialized_pk.len() - 1) / 2 + 1..serialized_pk.len()];
         let y_vec = y.to_vec();
-        Some(BigInt::from(&y_vec[..]))
+        Some(BigInt::from_vec(&y_vec[..]))
     }
 
     fn from_bytes(bytes: &[u8]) -> Result<Secp256k1Point, ErrorKey> {
@@ -424,7 +422,7 @@ impl ECPoint<PK, SK> for Secp256k1Point {
             255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
             255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 255, 255, 252, 47,
         ];
-        let order = BigInt::from(&p[..]);
+        let order = BigInt::from_vec(&p[..]);
         let x = point.x_coor().unwrap();
         let y = point.y_coor().unwrap();
         let minus_y = BigInt::mod_sub(&order, &y, &order);
@@ -466,8 +464,8 @@ impl ECPoint<PK, SK> for Secp256k1Point {
             vec_y = y_buffer
         }
 
-        assert_eq!(x, &BigInt::from(vec_x.as_ref()));
-        assert_eq!(y, &BigInt::from(vec_y.as_ref()));
+        assert_eq!(x, &BigInt::from_vec(vec_x.as_ref()));
+        assert_eq!(y, &BigInt::from_vec(vec_y.as_ref()));
 
         let mut v = vec![4 as u8];
         v.extend(vec_x);
@@ -781,7 +779,7 @@ mod tests {
         let a: FE = ECScalar::new_random();
         let a_bn = a.to_big_int();
         let a_inv = a.invert();
-        let a_inv_bn_1 = a_bn.invert(&FE::q()).unwrap();
+        let a_inv_bn_1 = Modulo::mod_inv(&a_bn, &FE::q()).unwrap();
         let a_inv_bn_2 = a_inv.to_big_int();
         assert_eq!(a_inv_bn_1, a_inv_bn_2);
     }

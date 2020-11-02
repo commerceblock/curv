@@ -19,9 +19,9 @@ use super::rand::RngCore;
 use super::traits::{
     ConvertFrom, Converter, Modulo, NumberTests, Samplable, ZeroizeBN, EGCD,
 };
-use num::BigInt as NumBigInt;
-use num::bigint::Sign;
-use num::Integer;
+use num_bigint::BigInt as NumBigInt;
+use num_bigint::{ModInverse, Sign};
+use num_integer::Integer;
 use num_traits::{Num, ToPrimitive, Zero};
 
 use std::ptr;
@@ -40,8 +40,12 @@ impl ZeroizeBN for NumBigInt {
 impl Converter for NumBigInt {
     /// Sign ignored here
     fn to_vec(value: &NumBigInt) -> Vec<u8> {
-        let bytes: Vec<u8> = value.to_bytes_be().1;
+        let bytes: Vec<u8> = value.to_signed_bytes_be();
         bytes
+    }
+
+    fn from_vec(value: &[u8]) -> NumBigInt {
+        NumBigInt::from_signed_bytes_be(value)
     }
 
     fn to_hex(&self) -> String {
@@ -74,8 +78,8 @@ impl Modulo for NumBigInt {
         (a.mod_floor(modulus) + b.mod_floor(modulus)).mod_floor(modulus)
     }
 
-    fn mod_inv(a: &Self, modulus: &Self) -> Self {
-        a.modpow(&BigInt::from(-1), modulus) // !! Not implemented for num::BigInt library
+    fn mod_inv(a: &Self, modulus: &Self) -> Option<Self> {
+        a.mod_inverse(modulus)
     }
 }
 
@@ -161,12 +165,6 @@ impl EGCD for NumBigInt {
 impl ConvertFrom<BigInt> for u64 {
     fn _from(x: &BigInt) -> u64 {
         x.to_u64().unwrap()
-    }
-}
-
-impl<'a> ConvertFrom<&'a [u8]> for NumBigInt {
-    fn _from(other: &&'a [u8]) -> NumBigInt {
-        BigInt::from_bytes_le(Sign::Plus, other)
     }
 }
 

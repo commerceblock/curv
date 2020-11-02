@@ -5,7 +5,7 @@
     License MIT: <https://github.com/KZen-networks/curv/blob/master/LICENSE>
 */
 
-extern crate num;
+extern crate num_bigint_dig as num_bigint;
 extern crate num_traits;
 
 #[macro_use]

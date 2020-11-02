@@ -509,10 +509,10 @@ mod tests {
 
     #[test]
     fn bincode_pk() {
-        // let pk = GE::generator();
-        // let encoded = bincode::serialize(&pk).unwrap();
-        // let decoded: RistrettoCurvPoint = bincode::deserialize(encoded.as_slice()).unwrap();
-        // // assert_eq!(decoded, pk);
+        let pk = GE::generator();
+        let encoded = bincode::serialize(&pk).unwrap();
+        let decoded: RistrettoCurvPoint = bincode::deserialize(encoded.as_slice()).unwrap();
+        assert_eq!(decoded, pk);
     }
 
     #[test]
