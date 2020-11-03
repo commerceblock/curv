@@ -17,7 +17,7 @@
 use super::rand::rngs::OsRng;
 use super::rand::RngCore;
 use super::traits::{
-    ConvertFrom, Converter, Modulo, NumberTests, Samplable, ZeroizeBN, EGCD,
+    ConvertFrom, Converter, Modulo, NumberTests, Samplable, ZeroizeBN, EGCD, BitManipulation,
 };
 use num_bigint::BigInt as NumBigInt;
 use num_bigint::{ModInverse, Sign};
@@ -27,6 +27,8 @@ use num_traits::{Num, ToPrimitive, Zero};
 use std::ptr;
 use std::sync::atomic;
 use std::convert::From;
+use std::ops::BitOrAssign;
+use std::ops::BitXorAssign;
 
 pub type BigInt = NumBigInt;
 
@@ -150,19 +152,28 @@ impl EGCD for NumBigInt {
     }
 }
 
-// impl BitManipulation for BigInt {
-//     fn set_bit(self: &mut Self, bit: usize, bit_val: bool) {
-//         if bit_val {
-//             self.setbit(bit);
-//         } else {
-//             self.clrbit(bit);
-//         }
-//     }
-//
-//     fn test_bit(self: &Self, bit: usize) -> bool {
-//         self.tstbit(bit)
-//     }
-// }
+
+impl BitManipulation for BigInt {
+    fn set_bit(self: &mut Self, bit: usize, bit_val: bool) {
+        let mask_bn = BigInt::from(1 << bit);
+        if bit_val {
+            // Set bit
+            self.bitor_assign(mask_bn);   // OR to set bit
+        } else {
+            // Clear bit
+            self.bitor_assign(mask_bn.clone());   // OR to set bit
+            self.bitxor_assign(mask_bn);    // XOR to toggle bit
+        }
+    }
+
+    fn test_bit(self: &Self, bit: usize) -> bool {
+        let mask_bn = BigInt::from(1 << bit);
+        if self == &(self.clone() | mask_bn) {
+            return true;
+        }
+        false
+    }
+}
 
 impl ConvertFrom<BigInt> for u64 {
     fn _from(x: &BigInt) -> u64 {
@@ -182,7 +193,7 @@ mod tests {
     use std::cmp;
     use std::convert::From;
 
-    use crate::arithmetic::traits::ZeroizeBN;
+    use crate::arithmetic::traits::{BitManipulation, ZeroizeBN};
     use num_traits::Zero;
 
     #[test]
@@ -319,5 +330,29 @@ mod tests {
     fn test_from_hex() {
         let a = BigInt::from(11);
         assert_eq!(BigInt::from_hex(&a.to_hex()), a);
+    }
+
+    #[test]
+    fn bit_manipulation_test() {
+        let bn8 = BigInt::from(8);
+        let mut bn_set_bit_1 = bn8.clone();
+        bn_set_bit_1.set_bit(3, true);
+        assert_eq!(bn8, bn_set_bit_1); // set bit already set
+
+        let mut bn_set_bit_2 = bn8.clone();
+        bn_set_bit_2.set_bit(2, true);
+        assert_eq!(BigInt::from(12), bn_set_bit_2); // set bit 2
+
+        let mut bn_set_bit_10 = bn8.clone();
+        bn_set_bit_10.set_bit(10, true);
+        assert_eq!(BigInt::from(1032), bn_set_bit_10); // set bit 10
+
+        // unset bit 10
+        bn_set_bit_10.set_bit(10, false);
+        assert_eq!(bn8, bn_set_bit_10);
+
+        // test bit set
+        assert_eq!(bn8.test_bit(10), false);
+        assert_eq!(bn8.test_bit(3), true);
     }
 }
