@@ -200,7 +200,7 @@ impl ECScalar<SK> for Secp256k1Scalar {
 
     fn invert(&self) -> Secp256k1Scalar {
         let bignum = self.to_big_int();
-        let bn_inv = Modulo::mod_inv(&bignum, &FE::q()).unwrap();
+        let bn_inv = Modulo::mod_inv(&bignum, &FE::q());
         ECScalar::from(&bn_inv)
     }
 }
@@ -780,7 +780,7 @@ mod tests {
         let a: FE = ECScalar::new_random();
         let a_bn = a.to_big_int();
         let a_inv = a.invert();
-        let a_inv_bn_1 = Modulo::mod_inv(&a_bn, &FE::q()).unwrap();
+        let a_inv_bn_1 = Modulo::mod_inv(&a_bn, &FE::q());
         let a_inv_bn_2 = a_inv.to_big_int();
         assert_eq!(a_inv_bn_1, a_inv_bn_2);
     }

@@ -79,8 +79,8 @@ impl Modulo for NumBigInt {
         (a.mod_floor(modulus) + b.mod_floor(modulus)).mod_floor(modulus)
     }
 
-    fn mod_inv(a: &Self, modulus: &Self) -> Option<Self> {
-        a.mod_inverse(modulus)
+    fn mod_inv(a: &Self, modulus: &Self) -> Self {
+        a.mod_inverse(modulus).expect("Failed to invert")
     }
 }
 
