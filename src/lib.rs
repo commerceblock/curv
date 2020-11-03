@@ -25,49 +25,49 @@ mod secp256k1instance {
 #[cfg(feature = "ec_secp256k1")]
 pub use self::secp256k1instance::*;
 
-// #[cfg(feature = "ec_ristretto")]
-// mod curveristrettoinstance {
-//     pub use crate::elliptic::curves::curve_ristretto::FE;
-//     pub use crate::elliptic::curves::curve_ristretto::GE;
-//     pub use crate::elliptic::curves::curve_ristretto::PK;
-//     pub use crate::elliptic::curves::curve_ristretto::SK;
-// }
-//
-// #[cfg(feature = "ec_ristretto")]
-// pub use self::curveristrettoinstance::*;
-//
-// #[cfg(feature = "ec_ed25519")]
-// mod ed25519instance {
-//     pub use crate::elliptic::curves::ed25519::FE;
-//     pub use crate::elliptic::curves::ed25519::GE;
-//     pub use crate::elliptic::curves::ed25519::PK;
-//     pub use crate::elliptic::curves::ed25519::SK;
-// }
-//
-// #[cfg(feature = "ec_ed25519")]
-// pub use self::ed25519instance::*;
-//
-// #[cfg(feature = "ec_jubjub")]
-// mod jubjubinstance {
-//     pub use crate::elliptic::curves::curve_jubjub::FE;
-//     pub use crate::elliptic::curves::curve_jubjub::GE;
-//     pub use crate::elliptic::curves::curve_jubjub::PK;
-//     pub use crate::elliptic::curves::curve_jubjub::SK;
-// }
-//
-// #[cfg(feature = "ec_jubjub")]
-// pub use self::jubjubinstance::*;
-//
-// #[cfg(feature = "ec_bls12_381")]
-// mod bls12_381_instance {
-//     pub use crate::elliptic::curves::bls12_381::FE;
-//     pub use crate::elliptic::curves::bls12_381::GE;
-//     pub use crate::elliptic::curves::bls12_381::PK;
-//     pub use crate::elliptic::curves::bls12_381::SK;
-// }
-//
-// #[cfg(feature = "ec_bls12_381")]
-// pub use self::bls12_381_instance::*;
+#[cfg(feature = "ec_ristretto")]
+mod curveristrettoinstance {
+    pub use crate::elliptic::curves::curve_ristretto::FE;
+    pub use crate::elliptic::curves::curve_ristretto::GE;
+    pub use crate::elliptic::curves::curve_ristretto::PK;
+    pub use crate::elliptic::curves::curve_ristretto::SK;
+}
+
+#[cfg(feature = "ec_ristretto")]
+pub use self::curveristrettoinstance::*;
+
+#[cfg(feature = "ec_ed25519")]
+mod ed25519instance {
+    pub use crate::elliptic::curves::ed25519::FE;
+    pub use crate::elliptic::curves::ed25519::GE;
+    pub use crate::elliptic::curves::ed25519::PK;
+    pub use crate::elliptic::curves::ed25519::SK;
+}
+
+#[cfg(feature = "ec_ed25519")]
+pub use self::ed25519instance::*;
+
+#[cfg(feature = "ec_jubjub")]
+mod jubjubinstance {
+    pub use crate::elliptic::curves::curve_jubjub::FE;
+    pub use crate::elliptic::curves::curve_jubjub::GE;
+    pub use crate::elliptic::curves::curve_jubjub::PK;
+    pub use crate::elliptic::curves::curve_jubjub::SK;
+}
+
+#[cfg(feature = "ec_jubjub")]
+pub use self::jubjubinstance::*;
+
+#[cfg(feature = "ec_bls12_381")]
+mod bls12_381_instance {
+    pub use crate::elliptic::curves::bls12_381::FE;
+    pub use crate::elliptic::curves::bls12_381::GE;
+    pub use crate::elliptic::curves::bls12_381::PK;
+    pub use crate::elliptic::curves::bls12_381::SK;
+}
+
+#[cfg(feature = "ec_bls12_381")]
+pub use self::bls12_381_instance::*;
 
 pub mod arithmetic;
 pub use crate::arithmetic::big_num::BigInt;
