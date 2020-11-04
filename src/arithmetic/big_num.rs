@@ -21,8 +21,8 @@ use super::traits::{
 };
 use num_bigint::BigInt as NumBigInt;
 use num_bigint::{ModInverse, Sign};
-use num_integer::Integer;
-use num_traits::{Num, ToPrimitive, Zero};
+pub use num_integer::Integer;
+pub use num_traits::{Num, ToPrimitive, One, Zero, Pow};
 
 use std::ptr;
 use std::sync::atomic;
@@ -154,8 +154,11 @@ impl EGCD for NumBigInt {
 
 
 impl BitManipulation for BigInt {
+    fn bit_length(self: &Self) -> usize {
+        self.clone().to_str_radix(2).len()
+    }
     fn set_bit(self: &mut Self, bit: usize, bit_val: bool) {
-        let mask_bn = BigInt::from(1 << bit);
+        let mask_bn = BigInt::from(1) << bit;
         if bit_val {
             // Set bit
             self.bitor_assign(mask_bn);   // OR to set bit
@@ -167,7 +170,7 @@ impl BitManipulation for BigInt {
     }
 
     fn test_bit(self: &Self, bit: usize) -> bool {
-        let mask_bn = BigInt::from(1 << bit);
+        let mask_bn = BigInt::from(1) << bit;
         if self == &(self.clone() | mask_bn) {
             return true;
         }
@@ -330,6 +333,13 @@ mod tests {
     fn test_from_hex() {
         let a = BigInt::from(11);
         assert_eq!(BigInt::from_hex(&a.to_hex()), a);
+    }
+
+    #[test]
+    fn bit_length_test() {
+        assert_eq!(BigInt::from(1).bit_length(), 1);
+        assert_eq!(BigInt::from(2).bit_length(), 2);
+        assert_eq!(BigInt::from(584).bit_length(), 10);
     }
 
     #[test]
