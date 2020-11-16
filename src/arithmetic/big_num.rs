@@ -22,7 +22,7 @@ use super::traits::{
 use num_bigint::BigInt as NumBigInt;
 use num_bigint::{ModInverse, Sign};
 pub use num_integer::Integer;
-pub use num_traits::{Num, ToPrimitive, One, Zero, Pow};
+pub use num_traits::{Num, ToPrimitive, One, Zero, Pow, Signed};
 
 use std::ptr;
 use std::sync::atomic;
@@ -198,6 +198,76 @@ mod tests {
 
     use crate::arithmetic::traits::{BitManipulation, ZeroizeBN};
     use num_traits::Zero;
+
+    use floating_duration::TimeAsFloat;
+    use std::time::Instant;
+
+    #[allow(dead_code)]
+    fn time_ops_add() {
+        let n = 10000;
+        let mut time: f64 = 0.0;
+        for i in 0..n {
+            let num1 = BigInt::sample(1024);
+            let num2 = BigInt::sample(1024);
+            let start = Instant::now();
+            let _ = BigInt::mod_add(&num1, &num2, &BigInt::from(10));
+            let elapsed = start.elapsed().as_fractional_micros();
+            if i > 2 {
+                time = time + elapsed;
+            }
+        }
+        println!("time: {:?}", time / n as f64);
+    }
+
+    #[allow(dead_code)]
+    fn time_ops_mul() {
+        let n = 10000;
+        let mut time: f64 = 0.0;
+        for i in 0..n {
+            let num1 = BigInt::sample(1024);
+            let num2 = BigInt::sample(1024);
+            let start = Instant::now();
+            let _ = BigInt::mod_mul(&num1, &num2, &BigInt::from(10));
+            let elapsed = start.elapsed().as_fractional_micros();
+            if i > 2 {
+                time = time + elapsed;
+            }
+        }
+        println!("time: {:?}", time / n as f64);
+    }
+
+    #[allow(dead_code)]
+    fn time_ops_pow() {
+        let n = 10000;
+        let mut time: f64 = 0.0;
+        for i in 0..n {
+            let num1 = BigInt::sample(1024);
+            let num2 = BigInt::sample(1024);
+            let start = Instant::now();
+            let _ = BigInt::mod_pow(&num1, &num2, &BigInt::from(10));
+            let elapsed = start.elapsed().as_fractional_micros();
+            if i > 2 {
+                time = time + elapsed;
+            }
+        }
+        println!("time: {:?}", time / n as f64);
+    }
+
+    #[allow(dead_code)]
+    fn time_ops_inv() {
+        let n = 10000;
+        let mut time: f64 = 0.0;
+        for i in 0..n {
+            let num1 = BigInt::sample(1024);
+            let start = Instant::now();
+            let _ = BigInt::mod_inv(&num1, &BigInt::from(10));
+            let elapsed = start.elapsed().as_fractional_micros();
+            if i > 2 {
+                time = time + elapsed;
+            }
+        }
+        println!("time: {:?}", time / n as f64);
+    }
 
     #[test]
     fn egcd_test() {
