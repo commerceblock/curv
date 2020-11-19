@@ -17,7 +17,7 @@ ecc = []
 merkle = ["rust-crypto", "merkle-sha3"]
 
 [dependencies]
-rand = "0.6"
+rand = { version = "0.6.5", features = ["wasm-bindgen"] }
 serde = "1.0"
 serde_derive = "1.0"
 zeroize = "0.10"
