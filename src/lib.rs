@@ -1,3 +1,4 @@
+
 /*
     This file is part of Curv library
     Copyright 2018 by Kzen Networks
@@ -21,6 +22,22 @@ mod secp256k1instance {
 
 #[cfg(feature = "ec_secp256k1")]
 pub use self::secp256k1instance::*;
+
+#[cfg(feature = "ec_secp256k1_sgx")]
+mod secp256k1instance {
+    pub use crate::elliptic::curves::secp256_k1_sgx::FE;
+    pub use crate::elliptic::curves::secp256_k1_sgx::GE;
+    pub use crate::elliptic::curves::secp256_k1_sgx::PK;
+    pub use crate::elliptic::curves::secp256_k1_sgx::SK;
+}
+
+#[cfg(feature = "ec_secp256k1_sgx")]
+pub use self::secp256k1instance::*;
+
+/*
+#[cfg(feature = "ec_secp256k1")]
+pub use crate::enclave;
+ */
 
 #[cfg(feature = "ec_ristretto")]
 mod curveristrettoinstance {
