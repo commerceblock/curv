@@ -6,33 +6,42 @@
     License MIT: <https://github.com/KZen-networks/curv/blob/master/LICENSE>
 */
 
+
+
+#![cfg_attr(not(target_env = "sgx"), no_std)]
+#![cfg_attr(target_env = "sgx", feature(rustc_private))]
+
+extern crate sgx_types;
+#[cfg(not(target_env = "sgx"))]
 #[macro_use]
+extern crate sgx_tstd as std;
+extern crate sgx_rand;
+
+extern crate secp256k1;
+
+use sgx_types::*;
+
+use std::backtrace::{self, PrintFormat};
+
 extern crate serde_derive;
 
-#[cfg(feature = "ecc")]
-pub mod elliptic;
 
-#[cfg(feature = "ec_secp256k1")]
-mod secp256k1instance {
-    pub use crate::elliptic::curves::secp256_k1::FE;
-    pub use crate::elliptic::curves::secp256_k1::GE;
-    pub use crate::elliptic::curves::secp256_k1::PK;
-    pub use crate::elliptic::curves::secp256_k1::SK;
-}
+//#[cfg(feature = "ecc")]
+//pub mod elliptic;
 
-#[cfg(feature = "ec_secp256k1")]
-pub use self::secp256k1instance::*;
 
-#[cfg(feature = "ec_secp256k1_sgx")]
-mod secp256k1instance {
-    pub use crate::elliptic::curves::secp256_k1_sgx::FE;
-    pub use crate::elliptic::curves::secp256_k1_sgx::GE;
-    pub use crate::elliptic::curves::secp256_k1_sgx::PK;
-    pub use crate::elliptic::curves::secp256_k1_sgx::SK;
-}
+//#[cfg(feature = "ec_secp256k1")]
+//mod secp256k1instance {
+//    pub use crate::elliptic::curves::secp256_k1::FE;
+//    pub use crate::elliptic::curves::secp256_k1::GE;
+//    pub use crate::elliptic::curves::secp256_k1::PK;
+//    pub use crate::elliptic::curves::secp256_k1::SK;
+//}
+ 
 
-#[cfg(feature = "ec_secp256k1_sgx")]
-pub use self::secp256k1instance::*;
+//#[cfg(feature = "ec_secp256k1")]
+//pub use self::secp256k1instance::*;
+
 
 /*
 #[cfg(feature = "ec_secp256k1")]
@@ -90,6 +99,15 @@ pub use crate::arithmetic::big_gmp::BigInt;
 
 #[cfg(feature = "ecc")]
 pub mod cryptographic_primitives;
+
+
+#[cfg(feature = "rust-gmp-sgx")]
+pub mod arithmetic_sgx;
+#[cfg(feature = "rust-gmp-sgx")]
+pub use crate::arithmetic_sgx::big_gmp::BigInt;
+
+//#[cfg(feature = "ecc")]
+//pub mod cryptographic_primitives;
 
 #[derive(Copy, PartialEq, Eq, Clone, Debug)]
 pub enum ErrorKey {

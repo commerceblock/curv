@@ -16,7 +16,7 @@ pub mod ed25519;
 #[cfg(feature = "ec_secp256k1")]
 pub mod secp256_k1;
 #[cfg(feature = "ec_secp256k1_sgx")]
-pub mod secp256_k1_sgx;
+pub mod secp256_k1;
 /*#[cfg(feature = "ec_secp256k1")]
 pub mod enclave;*/
 pub mod traits;

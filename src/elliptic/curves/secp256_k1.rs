@@ -16,6 +16,15 @@
 // The Public Key codec: Point <> SecretKey
 //
 
+#![crate_name = "curv"]
+#![crate_type = "staticlib"]
+
+#![cfg_attr(not(target_env = "sgx"), no_std)]
+#![cfg_attr(target_env = "sgx", feature(rustc_private))]
+
+#[cfg(not(target_env = "sgx"))]
+extern crate sgx_tstd as std;
+
 use super::traits::{ECPoint, ECScalar};
 use crate::arithmetic::traits::{Converter, Modulo};
 use crate::cryptographic_primitives::hashing::hash_sha256::HSha256;
@@ -24,19 +33,19 @@ use crate::BigInt;
 use crate::ErrorKey;
 
 use rand::{thread_rng, Rng};
-use secp256k1::constants::{
+use secp256k1_sgx::constants::{
     CURVE_ORDER, GENERATOR_X, GENERATOR_Y, SECRET_KEY_SIZE, UNCOMPRESSED_PUBLIC_KEY_SIZE,
 };
-use secp256k1::{PublicKey, Secp256k1, SecretKey, VerifyOnly};
+use secp256k1_sgx::{PublicKey, Secp256k1, SecretKey, VerifyOnly};
 use serde::de;
 use serde::de::{MapAccess, SeqAccess, Visitor};
 use serde::ser::SerializeStruct;
 use serde::ser::{Serialize, Serializer};
 use serde::{Deserialize, Deserializer};
-use std::fmt;
-use std::ops::{Add, Mul};
-use std::ptr;
-use std::sync::{atomic, Once};
+use sgx_tstd::fmt;
+use sgx_tstd::ops::{Add, Mul};
+use sgx_tstd::ptr;
+use sgx_tstd::sync::{atomic, Once};
 use zeroize::Zeroize;
 
 #[cfg(feature = "merkle")]
