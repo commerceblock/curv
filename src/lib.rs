@@ -43,6 +43,9 @@ extern crate serde_derive;
 //pub use self::secp256k1instance::*;
 
 
+//#[cfg(feature = "ecc-sgx")]
+//pub mod elliptic;
+
 /*
 #[cfg(feature = "ec_secp256k1")]
 pub use crate::enclave;
@@ -101,13 +104,13 @@ pub use crate::arithmetic::big_gmp::BigInt;
 pub mod cryptographic_primitives;
 
 
-#[cfg(feature = "rust-gmp-sgx")]
+#[cfg(feature = "rust_gmp_sgx")]
 pub mod arithmetic_sgx;
-#[cfg(feature = "rust-gmp-sgx")]
+#[cfg(feature = "rust_gmp_sgx")]
 pub use crate::arithmetic_sgx::big_gmp::BigInt;
 
-//#[cfg(feature = "ecc")]
-//pub mod cryptographic_primitives;
+#[cfg(feature = "ecc-sgx")]
+pub mod cryptographic_primitives;
 
 #[derive(Copy, PartialEq, Eq, Clone, Debug)]
 pub enum ErrorKey {
