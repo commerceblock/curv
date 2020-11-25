@@ -4,7 +4,7 @@
     (https://github.com/KZen-networks/curv)
     License MIT: https://github.com/KZen-networks/curv/blob/master/LICENSE
 */
-use crate::arithmetic::traits::Converter;
+use crate::arithmetic_sgx::traits::Converter;
 use crate::elliptic::curves::traits::{ECPoint, ECScalar};
 use crate::{BigInt, FE, GE};
 use blake2b_simd::Params;

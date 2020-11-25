@@ -12,9 +12,9 @@ use std::fmt::Debug;
 use std::str;
 pub const TWO_TIMES_SECRET_KEY_SIZE: usize = 64;
 use super::traits::{ECPoint, ECScalar};
-use crate::arithmetic::traits::Converter;
-use crate::cryptographic_primitives::hashing::hash_sha256::HSha256;
-use crate::cryptographic_primitives::hashing::traits::Hash;
+use crate::arithmetic_sgx::traits::Converter;
+use crate::cryptographic_primitives_sgx::hashing::hash_sha256::HSha256;
+use crate::cryptographic_primitives_sgx::hashing::traits::Hash;
 use serde::de;
 use serde::de::{MapAccess, SeqAccess, Visitor};
 use serde::ser::SerializeStruct;
@@ -24,7 +24,7 @@ use std::fmt;
 use std::ops::{Add, Mul};
 pub type SK = Fe;
 pub type PK = GeP3;
-use crate::arithmetic::traits::{Modulo, Samplable};
+use crate::arithmetic_sgx::traits::{Modulo, Samplable};
 use crate::BigInt;
 use crate::ErrorKey::{self, InvalidPublicKey};
 #[cfg(feature = "merkle")]
@@ -595,7 +595,7 @@ pub fn expmod(b: &BigInt, e: &BigInt, m: &BigInt) -> BigInt {
 #[cfg(test)]
 mod tests {
     use super::Ed25519Point;
-    use crate::arithmetic::traits::{Converter, Modulo};
+    use crate::arithmetic_sgx::traits::{Converter, Modulo};
     use crate::elliptic::curves::traits::ECPoint;
     use crate::elliptic::curves::traits::ECScalar;
     use crate::BigInt;

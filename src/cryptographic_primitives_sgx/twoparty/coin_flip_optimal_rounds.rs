@@ -5,10 +5,10 @@
     License MIT: <https://github.com/KZen-networks/curv/blob/master/LICENSE>
 */
 
-use crate::cryptographic_primitives::proofs::sigma_valid_pedersen::PedersenProof;
-use crate::cryptographic_primitives::proofs::sigma_valid_pedersen::ProvePederesen;
-use crate::cryptographic_primitives::proofs::sigma_valid_pedersen_blind::PedersenBlindingProof;
-use crate::cryptographic_primitives::proofs::sigma_valid_pedersen_blind::ProvePederesenBlind;
+use crate::cryptographic_primitives_sgx::proofs::sigma_valid_pedersen::PedersenProof;
+use crate::cryptographic_primitives_sgx::proofs::sigma_valid_pedersen::ProvePederesen;
+use crate::cryptographic_primitives_sgx::proofs::sigma_valid_pedersen_blind::PedersenBlindingProof;
+use crate::cryptographic_primitives_sgx::proofs::sigma_valid_pedersen_blind::ProvePederesenBlind;
 use crate::elliptic::curves::traits::*;
 use crate::{FE, GE};
 
@@ -72,7 +72,7 @@ pub fn finalize(proof: &PedersenBlindingProof, party2seed: &FE, party1comm: &GE)
 
 #[cfg(test)]
 mod tests {
-    use crate::cryptographic_primitives::twoparty::coin_flip_optimal_rounds::*;
+    use crate::cryptographic_primitives_sgx::twoparty::coin_flip_optimal_rounds::*;
     #[test]
     pub fn test_coin_toss() {
         let (party1_first_message, m1, r1) = Party1FirstMessage::commit();

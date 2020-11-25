@@ -6,8 +6,8 @@
 */
 
 use super::ProofError;
-use crate::cryptographic_primitives::hashing::hash_sha256::HSha256;
-use crate::cryptographic_primitives::hashing::traits::Hash;
+use crate::cryptographic_primitives_sgx::hashing::hash_sha256::HSha256;
+use crate::cryptographic_primitives_sgx::hashing::traits::Hash;
 use crate::elliptic::curves::traits::*;
 use crate::{FE, GE};
 use zeroize::Zeroize;
@@ -81,7 +81,7 @@ impl NISigmaProof<ECDDHProof, ECDDHWitness, ECDDHStatement> for ECDDHProof {
 
 #[cfg(test)]
 mod tests {
-    use crate::cryptographic_primitives::proofs::sigma_ec_ddh::*;
+    use crate::cryptographic_primitives_sgx::proofs::sigma_ec_ddh::*;
     use crate::elliptic::curves::traits::{ECPoint, ECScalar};
     use crate::{FE, GE};
 

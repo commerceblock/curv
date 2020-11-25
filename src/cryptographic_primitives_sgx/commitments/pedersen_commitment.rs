@@ -7,7 +7,7 @@
 
 use super::traits::Commitment;
 use super::SECURITY_BITS;
-use crate::arithmetic::traits::Samplable;
+use crate::arithmetic_sgx::traits::Samplable;
 
 use crate::elliptic::curves::traits::*;
 use crate::{BigInt, FE, GE};

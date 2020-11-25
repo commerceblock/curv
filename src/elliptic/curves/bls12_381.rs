@@ -10,9 +10,9 @@ use std::fmt::Debug;
 use std::str;
 pub const SECRET_KEY_SIZE: usize = 32;
 use super::traits::{ECPoint, ECScalar};
-use crate::arithmetic::traits::Converter;
-use crate::cryptographic_primitives::hashing::hash_sha512::HSha512;
-use crate::cryptographic_primitives::hashing::traits::Hash;
+use crate::arithmetic_sgx::traits::Converter;
+use crate::cryptographic_primitives_sgx::hashing::hash_sha512::HSha512;
+use crate::cryptographic_primitives_sgx::hashing::traits::Hash;
 
 use bls12_381::G1Affine;
 use bls12_381::G1Projective;
@@ -29,7 +29,7 @@ pub type SK = Scalar;
 // We use G1 only
 pub type PK = G1Affine;
 
-use crate::arithmetic::traits::Samplable;
+use crate::arithmetic_sgx::traits::Samplable;
 use crate::BigInt;
 use crate::ErrorKey::{self};
 
@@ -499,7 +499,7 @@ impl<'de> Visitor<'de> for JubjubPointVisitor {
 #[cfg(test)]
 mod tests {
     use super::G1Point;
-    use crate::arithmetic::traits::Modulo;
+    use crate::arithmetic_sgx::traits::Modulo;
     use crate::elliptic::curves::traits::ECPoint;
     use crate::elliptic::curves::traits::ECScalar;
     use crate::BigInt;

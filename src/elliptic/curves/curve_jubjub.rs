@@ -10,9 +10,9 @@ use std::fmt::Debug;
 use std::str;
 pub const SECRET_KEY_SIZE: usize = 64;
 use super::traits::{ECPoint, ECScalar};
-use crate::arithmetic::traits::Converter;
-use crate::cryptographic_primitives::hashing::hash_sha256::HSha256;
-use crate::cryptographic_primitives::hashing::traits::Hash;
+use crate::arithmetic::sgxtraits::Converter;
+use crate::cryptographic_primitives_sgx::hashing::hash_sha256::HSha256;
+use crate::cryptographic_primitives_sgx::hashing::traits::Hash;
 use pairing::bls12_381::Bls12;
 use sapling_crypto::jubjub::*;
 use sapling_crypto::jubjub::{edwards, fs::Fs, JubjubBls12, PrimeOrder, Unknown};
@@ -28,7 +28,7 @@ pub type SK = Fs;
 // we will take advantage of the fact that jubjub lib provides a uninque type for prime order sub group
 pub type PK = edwards::Point<Bls12, PrimeOrder>; // specific type for element in the prime order sub group
 pub type PKu = edwards::Point<Bls12, Unknown>; // special type for general point
-use crate::arithmetic::traits::{Modulo, Samplable};
+use crate::arithmetic::sgxtraits::{Modulo, Samplable};
 use crate::BigInt;
 use crate::ErrorKey::{self, InvalidPublicKey};
 use pairing::Field;
@@ -523,7 +523,7 @@ impl<'de> Visitor<'de> for JubjubPointVisitor {
 #[cfg(test)]
 mod tests {
     use super::JubjubPoint;
-    use crate::arithmetic::traits::Modulo;
+    use crate::arithmetic::sgxtraits::Modulo;
     use crate::elliptic::curves::traits::ECPoint;
     use crate::elliptic::curves::traits::ECScalar;
     use crate::BigInt;

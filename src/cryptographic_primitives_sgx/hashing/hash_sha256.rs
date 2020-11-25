@@ -6,7 +6,7 @@
 */
 
 use super::traits::Hash;
-use crate::arithmetic::traits::Converter;
+use crate::arithmetic_sgx::traits::Converter;
 use crate::elliptic::curves::traits::{ECPoint, ECScalar};
 
 use digest::Digest;

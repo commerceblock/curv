@@ -6,10 +6,10 @@
 */
 
 use super::ProofError;
-use crate::cryptographic_primitives::commitments::pedersen_commitment::PedersenCommitment;
-use crate::cryptographic_primitives::commitments::traits::Commitment;
-use crate::cryptographic_primitives::hashing::hash_sha256::HSha256;
-use crate::cryptographic_primitives::hashing::traits::Hash;
+use crate::cryptographic_primitives_sgx::commitments::pedersen_commitment::PedersenCommitment;
+use crate::cryptographic_primitives_sgx::commitments::traits::Commitment;
+use crate::cryptographic_primitives_sgx::hashing::hash_sha256::HSha256;
+use crate::cryptographic_primitives_sgx::hashing::traits::Hash;
 use crate::elliptic::curves::traits::*;
 
 use crate::{FE, GE};
@@ -99,7 +99,7 @@ impl ProvePederesenBlind for PedersenBlindingProof {
 
 #[cfg(test)]
 mod tests {
-    use crate::cryptographic_primitives::proofs::sigma_valid_pedersen_blind::*;
+    use crate::cryptographic_primitives_sgx::proofs::sigma_valid_pedersen_blind::*;
     use crate::FE;
 
     #[test]

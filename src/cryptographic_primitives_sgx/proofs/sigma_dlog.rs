@@ -11,8 +11,8 @@ use crate::GE;
 
 use crate::elliptic::curves::traits::*;
 
-use crate::cryptographic_primitives::hashing::hash_sha256::HSha256;
-use crate::cryptographic_primitives::hashing::traits::Hash;
+use crate::cryptographic_primitives_sgx::hashing::hash_sha256::HSha256;
+use crate::cryptographic_primitives_sgx::hashing::traits::Hash;
 use zeroize::Zeroize;
 
 /// This is implementation of Schnorr's identification protocol for elliptic curve groups or a
@@ -90,7 +90,7 @@ impl ProveDLog for DLogProof {
 
 #[cfg(test)]
 mod tests {
-    use crate::cryptographic_primitives::proofs::sigma_dlog::*;
+    use crate::cryptographic_primitives_sgx::proofs::sigma_dlog::*;
     use crate::FE;
 
     #[test]

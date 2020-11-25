@@ -7,9 +7,9 @@
 */
 
 use super::traits::{ECPoint, ECScalar};
-use crate::arithmetic::traits::Converter;
-use crate::cryptographic_primitives::hashing::hash_sha256::HSha256;
-use crate::cryptographic_primitives::hashing::traits::Hash;
+use crate::arithmetic_sgx::traits::Converter;
+use crate::cryptographic_primitives_sgx::hashing::hash_sha256::HSha256;
+use crate::cryptographic_primitives_sgx::hashing::traits::Hash;
 use crate::BigInt;
 use crate::ErrorKey::{self, InvalidPublicKey};
 use curve25519_dalek::constants::BASEPOINT_ORDER;
@@ -486,8 +486,8 @@ impl<'de> Visitor<'de> for RistrettoCurvPointVisitor {
 mod tests {
 
     use super::RistrettoCurvPoint;
-    use crate::arithmetic::traits::Converter;
-    use crate::arithmetic::traits::Modulo;
+    use crate::arithmetic_sgx::traits::Converter;
+    use crate::arithmetic_sgx::traits::Modulo;
     use crate::elliptic::curves::traits::ECPoint;
     use crate::elliptic::curves::traits::ECScalar;
     use crate::BigInt;

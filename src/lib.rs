@@ -68,25 +68,25 @@ extern crate secp256k1;
 //extern crate serde_derive;
 
 
-//#[cfg(feature = "ecc")]
-//pub mod elliptic;
-
-
-//#[cfg(feature = "ec_secp256k1")]
-//mod secp256k1instance {
-//    pub use crate::elliptic::curves::secp256_k1::FE;
-//    pub use crate::elliptic::curves::secp256_k1::GE;
-//    pub use crate::elliptic::curves::secp256_k1::PK;
-//    pub use crate::elliptic::curves::secp256_k1::SK;
-//}
- 
-
-//#[cfg(feature = "ec_secp256k1")]
-//pub use self::secp256k1instance::*;
-
-
+#[cfg(feature = "ecc")]
+pub mod elliptic;
 #[cfg(feature = "ecc-sgx")]
 pub mod elliptic;
+
+
+#[cfg(feature = "ec_secp256k1")]
+mod secp256k1instance {
+    pub use crate::elliptic::curves::secp256_k1::FE;
+    pub use crate::elliptic::curves::secp256_k1::GE;
+    pub use crate::elliptic::curves::secp256_k1::PK;
+    pub use crate::elliptic::curves::secp256_k1::SK;
+}
+ 
+
+#[cfg(feature = "ec_secp256k1")]
+pub use self::secp256k1instance::*;
+
+
 
 /*
 #[cfg(feature = "ec_secp256k1")]

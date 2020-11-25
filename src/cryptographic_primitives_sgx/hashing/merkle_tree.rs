@@ -61,7 +61,7 @@ impl MT256 {
 
 #[cfg(test)]
 mod tests {
-    use crate::cryptographic_primitives::hashing::merkle_tree::MT256;
+    use crate::cryptographic_primitives_sgx::hashing::merkle_tree::MT256;
     use crate::elliptic::curves::traits::ECPoint;
     use crate::GE;
     #[test]

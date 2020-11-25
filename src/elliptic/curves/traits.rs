@@ -5,6 +5,9 @@
     License MIT: <https://github.com/KZen-networks/curv/blob/master/LICENSE>
 */
 
+use sgx_tstd as std;
+use std::vec::Vec;
+
 use crate::BigInt;
 use crate::ErrorKey;
 

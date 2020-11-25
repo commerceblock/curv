@@ -238,7 +238,7 @@ impl VerifiableSS {
 
 #[cfg(test)]
 mod tests {
-    use crate::cryptographic_primitives::secret_sharing::feldman_vss::*;
+    use crate::cryptographic_primitives_sgx::secret_sharing::feldman_vss::*;
     use crate::{FE, GE};
 
     #[test]

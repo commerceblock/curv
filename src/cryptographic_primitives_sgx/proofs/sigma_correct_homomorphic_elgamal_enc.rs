@@ -7,8 +7,8 @@
 */
 
 use super::ProofError;
-use crate::cryptographic_primitives::hashing::hash_sha256::HSha256;
-use crate::cryptographic_primitives::hashing::traits::Hash;
+use crate::cryptographic_primitives_sgx::hashing::hash_sha256::HSha256;
+use crate::cryptographic_primitives_sgx::hashing::traits::Hash;
 use crate::elliptic::curves::traits::*;
 use crate::FE;
 use crate::GE;
@@ -81,7 +81,7 @@ impl HomoELGamalProof {
 
 #[cfg(test)]
 mod tests {
-    use crate::cryptographic_primitives::proofs::sigma_correct_homomorphic_elgamal_enc::*;
+    use crate::cryptographic_primitives_sgx::proofs::sigma_correct_homomorphic_elgamal_enc::*;
     use crate::{FE, GE};
 
     #[test]

@@ -15,9 +15,10 @@ bigint-std = ["bigint", "num-bigint-dig/std", "num-bigint-dig/mesalock_sgx"]
 
 mesalock_sgx = ["sgx_tstd"]
 rust_gmp_sgx = []
+ecc-sgx=[]
 #"num-integer",
 #ec_secp256k1 = ["rust-gmp" ,"ecc", "secp256k1"]
-ec_secp256k1 = ["secp256k1-sgx", "rust_gmp_sgx"]
+ec_secp256k1 = ["secp256k1-sgx", "rust_gmp_sgx", "ecc-sgx"]
 qec_ristretto = ["rust-gmp", "ecc" , "curve25519-dalek"]
 ec_ed25519 = ["rust-gmp", "ecc" , "cryptoxide"]
 ec_jubjub = ["rust-gmp", "ecc" , "pairing", "sapling-crypto"]
@@ -28,19 +29,23 @@ merkle = ["rust-crypto", "merkle-sha3"]
 [dependencies]
 #rand = "0.6"
 rand = {git = "https://github.com/mesalock-linux/rand-sgx", tag = "v0.7.3_sgx1.1.3", features=["nightly"] }
-#serde = { git = "https://github.com/mesalock-linux/serde-sgx" }
-#sgx_serialize_derive = { rev="v1.1.3", git = "https://github.com/apache/teaclave-sgx-sdk.git" }
-#serde_cbor = { git = "https://github.com/mesalock-linux/cbor-sgx" }
+sgx_serialize_derive = { rev="v1.1.3", git = "https://github.com/apache/teaclave-sgx-sdk.git" }
+serde_cbor = { git = "https://github.com/mesalock-linux/cbor-sgx" }
 #serde = "1.0"
-#serde_derive = { git = "https://github.com/mesalock-linux/serde-sgx", version="1.0", feature=["std"] }  
 #serde_derive = "1.0"
-#zeroize = "0.10"
+
+sha3 = { git = "https://github.com/mesalock-linux/rustcrypto-hashes-sgx", tag = "sgx_1.1.3"  }
+sha2 = { git = "https://github.com/mesalock-linux/rustcrypto-hashes-sgx", tag = "sgx_1.1.3"  }
+hmac = { git = "https://github.com/mesalock-linux/rustcrypto-MACs-sgx", tag = "sgx_1.1.3"  }
+digest = { git = "https://github.com/mesalock-linux/rustcrypto-traits-sgx", tag = "sgx_1.1.3" }
+
+zeroize = "0.10"
 #sha3 = "0.8.2"
 #sha2 = "0.8.0"
 #hmac = "0.7.1"
 #digest = "0.8.1"
 #hex = "^0.3"
-#blake2b_simd = "0.5.7"
+blake2b_simd = "0.5.7"
 secp256k1-sgx = { path = "/root/rust-secp256k1-sgx", optional = true, features=["rand"] }
 #num-bigint  = { git = "https://github.com/mesalock-linux/num-bigint-sgx", features=["serde"], optional=true, tag = "sgx_1.1.3" }
 num-bigint  = { git = "https://github.com/mesalock-linux/num-bigint-sgx", features=["serde"], optional=true}

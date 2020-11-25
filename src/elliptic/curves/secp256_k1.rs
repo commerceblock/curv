@@ -25,18 +25,20 @@
 #[cfg(not(target_env = "sgx"))]
 extern crate sgx_tstd as std;
 
+use std::vec::Vec;
+
 use super::traits::{ECPoint, ECScalar};
-use crate::arithmetic::traits::{Converter, Modulo};
-use crate::cryptographic_primitives::hashing::hash_sha256::HSha256;
-use crate::cryptographic_primitives::hashing::traits::Hash;
+use crate::arithmetic_sgx::traits::{Converter, Modulo};
+use crate::cryptographic_primitives_sgx::hashing::hash_sha256::HSha256;
+use crate::cryptographic_primitives_sgx::hashing::traits::Hash;
 use crate::BigInt;
 use crate::ErrorKey;
 
 use rand::{thread_rng, Rng};
-use secp256k1_sgx::constants::{
+use secp256k1::constants::{
     CURVE_ORDER, GENERATOR_X, GENERATOR_Y, SECRET_KEY_SIZE, UNCOMPRESSED_PUBLIC_KEY_SIZE,
 };
-use secp256k1_sgx::{PublicKey, Secp256k1, SecretKey, VerifyOnly};
+use secp256k1::{PublicKey, Secp256k1, SecretKey, VerifyOnly};
 use serde::de;
 use serde::de::{MapAccess, SeqAccess, Visitor};
 use serde::ser::SerializeStruct;
@@ -84,6 +86,12 @@ pub struct Secp256k1Point {
 pub type GE = Secp256k1Point;
 pub type FE = Secp256k1Scalar;
 
+fn get_default_vec(size: usize) -> Vec<u8> {
+    let mut result = Vec::<u8>::new();
+    result.resize_with(bytes,Default::default);
+    result
+}
+
 impl Secp256k1Point {
     pub fn random_point() -> Secp256k1Point {
         let random_scalar: Secp256k1Scalar = Secp256k1Scalar::new_random();
@@ -96,7 +104,8 @@ impl Secp256k1Point {
     }
 
     pub fn base_point2() -> Secp256k1Point {
-        let mut v = vec![4 as u8];
+	let mut v = Vec::<u8>::new();
+	v.push(4);
         v.extend(BASE_POINT2_X.as_ref());
         v.extend(BASE_POINT2_Y.as_ref());
         Secp256k1Point {
@@ -147,7 +156,7 @@ impl ECScalar<SK> for Secp256k1Scalar {
         let mut v = BigInt::to_vec(&n_reduced);
 
         if v.len() < SECRET_KEY_SIZE {
-            let mut template = vec![0; SECRET_KEY_SIZE - v.len()];
+	    let mut template = get_default_vec(SECRET_KEY_SIZE - v.len());
             template.extend_from_slice(&v);
             v = template;
         }
@@ -297,7 +306,8 @@ impl Zeroize for Secp256k1Point {
 
 impl ECPoint<PK, SK> for Secp256k1Point {
     fn generator() -> Secp256k1Point {
-        let mut v = vec![4 as u8];
+        let mut v = Vec::<u8>::new();
+	v.push(4);
         v.extend(GENERATOR_X.as_ref());
         v.extend(GENERATOR_Y.as_ref());
         Secp256k1Point {
@@ -341,10 +351,11 @@ impl ECPoint<PK, SK> for Secp256k1Point {
         let byte_len = bytes_vec.len();
         match byte_len {
             33..=63 => {
-                let mut template = vec![0; 64 - bytes_vec.len()];
+		let mut template = get_default_vec(64 - bytes_vec.len());
                 template.extend_from_slice(&bytes);
                 let bytes_vec = template;
-                let mut template: Vec<u8> = vec![4];
+		let mut template = Vec::<u8>::new();
+		template.push(4);
                 template.append(&mut bytes_vec.clone());
                 let bytes_slice = &template[..];
 
@@ -358,10 +369,11 @@ impl ECPoint<PK, SK> for Secp256k1Point {
             }
 
             0..=32 => {
-                let mut template = vec![0; 32 - bytes_vec.len()];
+		let mut template = get_default_vec(32 - bytes_vec.len());
                 template.extend_from_slice(&bytes);
                 let bytes_vec = template;
-                let mut template: Vec<u8> = vec![2];
+		let mut template = Vec::<u8>::new();
+                template.push(2);
                 template.append(&mut bytes_vec.clone());
                 let bytes_slice = &template[..];
 
@@ -376,7 +388,8 @@ impl ECPoint<PK, SK> for Secp256k1Point {
             _ => {
                 let bytes_slice = &bytes_vec[0..64];
                 let bytes_vec = bytes_slice.to_vec();
-                let mut template: Vec<u8> = vec![4];
+		let mut template = Vec::<u8>::new();
+                template.push(4);
                 template.append(&mut bytes_vec.clone());
                 let bytes_slice = &template[..];
 
@@ -391,16 +404,18 @@ impl ECPoint<PK, SK> for Secp256k1Point {
         }
     }
     fn pk_to_key_slice(&self) -> Vec<u8> {
-        let mut v = vec![4 as u8];
+	let mut v = Vec::<u8>::new();
+        v.push(4);
         let x_vec = BigInt::to_vec(&self.x_coor().unwrap());
         let y_vec = BigInt::to_vec(&self.y_coor().unwrap());
 
         let mut raw_x: Vec<u8> = Vec::new();
         let mut raw_y: Vec<u8> = Vec::new();
-        raw_x.extend(vec![0u8; 32 - x_vec.len()]);
+	
+        raw_x.extend(get_default_vec(32 - x_vec.len()));
         raw_x.extend(x_vec);
 
-        raw_y.extend(vec![0u8; 32 - y_vec.len()]);
+	raw_y.extend(get_default_vec(32 - y_vec.len()));
         raw_y.extend(y_vec);
 
         v.extend(raw_x);
@@ -429,7 +444,7 @@ impl ECPoint<PK, SK> for Secp256k1Point {
             purpose: "sub_point",
             ge: *other,
         };
-        let p: Vec<u8> = vec![
+        let p: [u8;32] = [
             255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
             255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 254, 255, 255, 252, 47,
         ];
@@ -441,11 +456,11 @@ impl ECPoint<PK, SK> for Secp256k1Point {
         let x_vec = BigInt::to_vec(&x);
         let y_vec = BigInt::to_vec(&minus_y);
 
-        let mut template_x = vec![0; 32 - x_vec.len()];
+        let mut template_x = get_default_vec(32 - x_vec.len());
         template_x.extend_from_slice(&x_vec);
         let mut x_vec = template_x;
 
-        let mut template_y = vec![0; 32 - y_vec.len()];
+	let mut template_y = get_default_vec(32 - y_vec.len());
         template_y.extend_from_slice(&y_vec);
         let y_vec = template_y;
 
@@ -463,14 +478,14 @@ impl ECPoint<PK, SK> for Secp256k1Point {
 
         if vec_x.len() < coor_size {
             // pad
-            let mut x_buffer = vec![0; coor_size - vec_x.len()];
+	    let mut x_buffer = get_default_vec(coor_size - vec_x.len());
             x_buffer.extend_from_slice(&vec_x);
             vec_x = x_buffer
         }
 
         if vec_y.len() < coor_size {
             // pad
-            let mut y_buffer = vec![0; coor_size - vec_y.len()];
+	    let mut y_buffer = get_default_vec(coor_size - vec_y.len());
             y_buffer.extend_from_slice(&vec_y);
             vec_y = y_buffer
         }
@@ -478,7 +493,8 @@ impl ECPoint<PK, SK> for Secp256k1Point {
         assert_eq!(x, &BigInt::from(vec_x.as_ref()));
         assert_eq!(y, &BigInt::from(vec_y.as_ref()));
 
-        let mut v = vec![4 as u8];
+	let mut v = Vec::<u8>::new();
+        let mut v = v.push(4);
         v.extend(vec_x);
         v.extend(vec_y);
 
@@ -623,10 +639,10 @@ mod tests {
     use super::BigInt;
     use super::Secp256k1Point;
     use super::Secp256k1Scalar;
-    use crate::arithmetic::traits::Converter;
-    use crate::arithmetic::traits::Modulo;
-    use crate::cryptographic_primitives::hashing::hash_sha256::HSha256;
-    use crate::cryptographic_primitives::hashing::traits::Hash;
+    use crate::arithmetic_sgx::traits::Converter;
+    use crate::arithmetic_sgx::traits::Modulo;
+    use crate::cryptographic_primitives_sgx::hashing::hash_sha256::HSha256;
+    use crate::cryptographic_primitives_sgx::hashing::traits::Hash;
     use crate::elliptic::curves::traits::ECPoint;
     use crate::elliptic::curves::traits::ECScalar;
     use bincode;

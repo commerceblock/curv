@@ -87,7 +87,7 @@ pub fn compute_pubkey(local_share: &EcKeyPair, other_share_public_share: &GE) ->
 
 #[cfg(test)]
 mod tests {
-    use crate::cryptographic_primitives::twoparty::dh_key_exchange::*;
+    use crate::cryptographic_primitives_sgx::twoparty::dh_key_exchange::*;
     use crate::elliptic::curves::traits::ECScalar;
     use crate::BigInt;
     use crate::{FE, GE};
