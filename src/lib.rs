@@ -24,8 +24,6 @@ extern crate serde;
 extern crate num_integer;
 extern crate num_traits;
 
-
-
 use core::cmp;
 use core::fmt;
 use core::hash::{Hash, Hasher};
@@ -34,42 +32,23 @@ use core::str::FromStr;
 #[cfg(feature = "std")]
 use std::error::Error;
 
-#[cfg(feature = "bigint")]
-use num_bigint::{BigInt, BigUint, Sign};
+//#[cfg(feature = "bigint")]
+//use num_bigint::{BigInt, BigUint, Sign};
 
 use num_integer::Integer;
-use traits::float::FloatCore;
-use traits::{
+use num_traits::float::FloatCore;
+use num_traits::{
     Bounded, CheckedAdd, CheckedDiv, CheckedMul, CheckedSub, FromPrimitive, Inv, Num, NumCast, One,
     Pow, Signed, Zero,
 };
 
-
-
-
 #[cfg(feature = "bigint")]
-impl Ratio<BigInt> {
-    /// Converts a float into a rational number.                                                                                                                                                                                                                                          
-    pub fn from_float<T: FloatCore>(f: T) -> Option<BigRational> {
-        if !f.is_finite() {
-            return None;
-        }
-        let (mantissa, exponent, sign) = f.integer_decode();
-        let bigint_sign = if sign == 1 { Sign::Plus } else { Sign::Minus };
-        if exponent < 0 {
-            let one: BigInt = One::one();
-            let denom: BigInt = one << ((-exponent) as usize);
-            let numer: BigUint = FromPrimitive::from_u64(mantissa).unwrap();
-            Some(Ratio::new(BigInt::from_biguint(bigint_sign, numer), denom))
-        } else {
-            let mut numer: BigUint = FromPrimitive::from_u64(mantissa).unwrap();
-            numer = numer << (exponent as usize);
-            Some(Ratio::from_integer(BigInt::from_biguint(
-                bigint_sign,
-                numer,
-            )))
-        }
-    }
+pub fn test_bigint() {
+    let one: BigInt = One::one();
+    let zero: BigInt = Zero::zero();
+    let modulus = &BigInt::from(2);
+    let result = (one.mod_floor(modulus) * zero.mod_floor(modulus)).mod_floor(modulus);
+    ()
 }
 
 
@@ -183,3 +162,36 @@ pub enum ErrorKey {
 pub enum ErrorSS {
     VerifyShareError,
 }
+
+//#[cfg(test)]
+//mod tests {
+//    use super::*;
+    
+    
+    /*
+    /// Converts a float into a rational number.                                                                                                                                                                                                                                          
+    pub fn from_float<T: FloatCore>(f: T) -> Option<BigRational> {
+        if !f.is_finite() {
+            return None;
+        }
+        let (mantissa, exponent, sign) = f.integer_decode();
+        let bigint_sign = if sign == 1 { Sign::Plus } else { Sign::Minus };
+        if exponent < 0 {
+            let one: BigInt = One::one();
+            let denom: BigInt = one << ((-exponent) as usize);
+            let numer: BigUint = FromPrimitive::from_u64(mantissa).unwrap();
+            Some(Ratio::new(BigInt::from_biguint(bigint_sign, numer), denom))
+        } else {
+            let mut numer: BigUint = FromPrimitive::from_u64(mantissa).unwrap();
+            numer = numer << (exponent as usize);
+            Some(Ratio::from_integer(BigInt::from_biguint(
+                bigint_sign,
+                numer,
+            )))
+        }
+    }
+     */
+//}
+
+    
+

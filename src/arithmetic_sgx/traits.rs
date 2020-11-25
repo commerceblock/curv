@@ -35,8 +35,8 @@ pub trait Converter {
 pub trait Modulo {
     fn mod_pow(base: &Self, exponent: &Self, modulus: &Self) -> Self;
     fn mod_mul(a: &Self, b: &Self, modulus: &Self) -> Self;
-//    fn mod_sub(a: &Self, b: &Self, modulus: &Self) -> Self;
-//    fn mod_add(a: &Self, b: &Self, modulus: &Self) -> Self;
+    fn mod_sub(a: &Self, b: &Self, modulus: &Self) -> Self;
+    fn mod_add(a: &Self, b: &Self, modulus: &Self) -> Self;
 //    fn mod_inv(a: &Self, modulus: &Self) -> Self;
 }
 

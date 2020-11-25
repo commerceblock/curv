@@ -22,28 +22,44 @@ use std::string::String;
 //use super::rand::rngs::OsRng;
 //use super::rand::RngCore;
 use super::traits::{
-    ConvertFrom,
-    Converter, Modulo, NumberTests, Samplable, ZeroizeBN,
-    EGCD,
-    BitManipulation,
+//    ConvertFrom,
+    //    Converter,
+    Modulo,
+    //NumberTests, Samplable, ZeroizeBN,
+//    EGCD,
+//    BitManipulation,
 };
 
 pub use num_bigint::BigInt as NumBigInt;
 pub use num_bigint::{Sign, BigUint};
-    //ModInverse, 
+//,
+		     //ModInverse};
+    
 pub use num_traits::{
     CheckedAdd, CheckedDiv, CheckedMul, CheckedSub, FromPrimitive, Num, One, Pow, Signed,
     Zero, 
 };
 use num_traits::cast::ToPrimitive;
 
-use std::ptr;
-use std::sync::atomic;
-use std::convert::From;
-use std::ops::BitOrAssign;
-use std::ops::BitXorAssign;
+//use std::ptr;
+//use std::sync::atomic;
+//use std::convert::From;
+//use std::ops::BitOrAssign;
+//use std::ops::BitXorAssign;
+
+use num_integer::Integer;
 
 pub type BigInt = NumBigInt;
+
+
+#[cfg(feature = "bigint")]
+pub fn test_bigint() {
+    let one: BigInt = One::one();
+    let zero: BigInt = Zero::zero();
+    let modulus = &BigInt::from(2);
+    let result = (one.mod_floor(modulus) * zero.mod_floor(modulus)).mod_floor(modulus);
+    ()
+}
 
 /*
 impl ZeroizeBN for NumBigInt {
@@ -57,6 +73,7 @@ impl ZeroizeBN for NumBigInt {
 */
 
 
+/*
 impl Converter for NumBigInt {
     /// Sign ignored here
     fn to_vec(&self) -> Vec<u8> {
@@ -72,11 +89,11 @@ impl Converter for NumBigInt {
     fn to_hex(&self) -> String {
         self.to_str_radix(super::HEX_RADIX.into())
     }
-
+*/
 //    fn from_hex(value: &str) -> NumBigInt {
 //        NumBigInt::from_str_radix(value, super::HEX_RADIX.into()).expect("Error in serialization")
 //    }
-}
+//}
 
 
 
@@ -90,17 +107,17 @@ impl Modulo for NumBigInt {
     }
 
 
-//    fn mod_sub(a: &Self, b: &Self, modulus: &Self) -> Self {
-//        let a_m = a.mod_floor(modulus);
-//        let b_m = b.mod_floor(modulus);
+    fn mod_sub(a: &Self, b: &Self, modulus: &Self) -> Self {
+        let a_m = a.mod_floor(modulus);
+        let b_m = b.mod_floor(modulus);
 
-//        let sub_op = a_m - b_m + modulus;
-//        sub_op.mod_floor(modulus)
-//    }
+        let sub_op = a_m - b_m + modulus;
+        sub_op.mod_floor(modulus)
+    }
 
-//    fn mod_add(a: &Self, b: &Self, modulus: &Self) -> Self {
-//        (a.mod_floor(modulus) + b.mod_floor(modulus)).mod_floor(modulus)
-//    }
+    fn mod_add(a: &Self, b: &Self, modulus: &Self) -> Self {
+        (a.mod_floor(modulus) + b.mod_floor(modulus)).mod_floor(modulus)
+    }
 
 //    fn mod_inv(a: &Self, modulus: &Self) -> Self {
 //        a.mod_inverse(modulus).expect("Failed to invert")
@@ -184,7 +201,7 @@ impl EGCD for NumBigInt {
 }
 */
 
-
+/*
 impl BitManipulation for NumBigInt {
     fn bit_length(self: &Self) -> usize {
         self.clone().to_str_radix(2).len()
@@ -209,7 +226,7 @@ impl BitManipulation for NumBigInt {
         false
     }
 }
-
+*/
 /*  
 impl ConvertFrom<num_bigint::BigInt> for u64 {
 
