@@ -19,17 +19,15 @@ use std::vec::Vec;
 use std::string::String;
 
 
-//use super::rand::rngs::OsRng;
-//use super::rand::RngCore;
 use super::traits::{
     ConvertFrom,
     Converter,
     Modulo,
     NumberTests,
     Samplable,
-//    ZeroizeBN,
+    ZeroizeBN,
     EGCD,
-//    BitManipulation,
+    BitManipulation,
 };
 
 pub use num_bigint::BigInt as NumBigInt;
@@ -41,11 +39,10 @@ pub use num_traits::{
 };
 use num_traits::cast::ToPrimitive;
 
-//use std::ptr;
-//use std::sync::atomic;
-//use std::convert::From;
-//use std::ops::BitOrAssign;
-//use std::ops::BitXorAssign;
+use std::ptr;
+use std::sync::atomic;
+use std::ops::BitOrAssign;
+use std::ops::BitXorAssign;
 
 use num_integer::Integer;
 
@@ -63,7 +60,7 @@ pub fn test_bigint() {
     ()
 }
 
-/*
+
 impl ZeroizeBN for NumBigInt {
     fn zeroize_bn(&mut self) {
 	let uzero = BigUint::zero();
@@ -72,7 +69,7 @@ impl ZeroizeBN for NumBigInt {
         atomic::compiler_fence(atomic::Ordering::SeqCst);
     }
 }
-*/
+
 
 
 
@@ -201,8 +198,6 @@ impl EGCD for NumBigInt {
 
 }
 
-
-/*
 impl BitManipulation for NumBigInt {
     fn bit_length(self: &Self) -> usize {
         self.clone().to_str_radix(2).len()
@@ -227,7 +222,6 @@ impl BitManipulation for NumBigInt {
         false
     }
 }
-*/
 
 impl ConvertFrom<num_bigint::BigInt> for u64 {
 
