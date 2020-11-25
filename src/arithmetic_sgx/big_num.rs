@@ -22,13 +22,13 @@ use std::string::String;
 //use super::rand::rngs::OsRng;
 //use super::rand::RngCore;
 use super::traits::{
-//    ConvertFrom,
+    ConvertFrom,
     Converter,
     Modulo,
-    //NumberTests,
+    NumberTests,
     Samplable,
 //    ZeroizeBN,
-//    EGCD,
+    EGCD,
 //    BitManipulation,
 };
 
@@ -175,7 +175,7 @@ impl Samplable for NumBigInt {
     }
 }
 
-    /*
+
 impl NumberTests for NumBigInt {
     fn is_zero(me: &Self) -> bool {
         me.is_zero()
@@ -189,9 +189,9 @@ impl NumberTests for NumBigInt {
         *me < NumBigInt::from(0)
     }
 }
-*/
 
-/*
+
+
 impl EGCD for NumBigInt {
 
     fn egcd(a: &Self, b: &Self) -> (Self, Self, Self) {
@@ -200,7 +200,7 @@ impl EGCD for NumBigInt {
     }
 
 }
-*/
+
 
 /*
 impl BitManipulation for NumBigInt {
@@ -228,7 +228,7 @@ impl BitManipulation for NumBigInt {
     }
 }
 */
-/*  
+
 impl ConvertFrom<num_bigint::BigInt> for u64 {
 
     fn _from(x: &num_bigint::BigInt) -> u64 {
@@ -236,7 +236,7 @@ impl ConvertFrom<num_bigint::BigInt> for u64 {
     }
 
 }
-*/
+
 
 
 #[cfg(test)]
