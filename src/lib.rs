@@ -17,7 +17,7 @@ extern crate sgx_tstd as std;
 extern crate std;
 
 #[cfg(feature = "bigint")]
-extern crate num_bigint;
+extern crate num_bigint_dig as num_bigint;
 #[cfg(feature = "serde")]
 extern crate serde;
 

@@ -29,7 +29,7 @@ pub trait Converter {
     fn to_vec(&self) -> Vec<u8>;
     fn from_vec(value: &[u8]) -> Self;
     fn to_hex(&self) -> String;
-//    fn from_hex(n: &str) -> Self;
+    fn from_hex(n: &str) -> Self;
 }
 
 pub trait Modulo {
@@ -37,7 +37,7 @@ pub trait Modulo {
     fn mod_mul(a: &Self, b: &Self, modulus: &Self) -> Self;
     fn mod_sub(a: &Self, b: &Self, modulus: &Self) -> Self;
     fn mod_add(a: &Self, b: &Self, modulus: &Self) -> Self;
-//    fn mod_inv(a: &Self, modulus: &Self) -> Self;
+    fn mod_inv(a: &Self, modulus: &Self) -> Self;
 }
 
 pub trait Samplable {

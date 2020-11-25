@@ -23,17 +23,17 @@ use std::string::String;
 //use super::rand::RngCore;
 use super::traits::{
 //    ConvertFrom,
-    //    Converter,
+    Converter,
     Modulo,
-    //NumberTests, Samplable, ZeroizeBN,
+    //NumberTests,
+    Samplable,
+//    ZeroizeBN,
 //    EGCD,
 //    BitManipulation,
 };
 
 pub use num_bigint::BigInt as NumBigInt;
-pub use num_bigint::{Sign, BigUint};
-//,
-		     //ModInverse};
+pub use num_bigint::{Sign, BigUint, ModInverse};
     
 pub use num_traits::{
     CheckedAdd, CheckedDiv, CheckedMul, CheckedSub, FromPrimitive, Num, One, Pow, Signed,
@@ -48,6 +48,8 @@ use num_traits::cast::ToPrimitive;
 //use std::ops::BitXorAssign;
 
 use num_integer::Integer;
+
+use sgx_rand::{Rng, StdRng};
 
 pub type BigInt = NumBigInt;
 
@@ -73,7 +75,7 @@ impl ZeroizeBN for NumBigInt {
 */
 
 
-/*
+
 impl Converter for NumBigInt {
     /// Sign ignored here
     fn to_vec(&self) -> Vec<u8> {
@@ -89,11 +91,11 @@ impl Converter for NumBigInt {
     fn to_hex(&self) -> String {
         self.to_str_radix(super::HEX_RADIX.into())
     }
-*/
-//    fn from_hex(value: &str) -> NumBigInt {
-//        NumBigInt::from_str_radix(value, super::HEX_RADIX.into()).expect("Error in serialization")
-//    }
-//}
+
+    fn from_hex(value: &str) -> NumBigInt {
+        NumBigInt::from_str_radix(value, super::HEX_RADIX.into()).expect("Error in serialization")
+    }
+}
 
 
 
@@ -119,13 +121,12 @@ impl Modulo for NumBigInt {
         (a.mod_floor(modulus) + b.mod_floor(modulus)).mod_floor(modulus)
     }
 
-//    fn mod_inv(a: &Self, modulus: &Self) -> Self {
-//        a.mod_inverse(modulus).expect("Failed to invert")
-//    }
+    fn mod_inv(a: &Self, modulus: &Self) -> Self {
+        a.mod_inverse(modulus).expect("Failed to invert")
+    }
 }
 
 
-/*
 impl Samplable for NumBigInt {
     fn sample_below(upper: &Self) -> Self {
         assert!(*upper > NumBigInt::zero());
@@ -155,9 +156,10 @@ impl Samplable for NumBigInt {
     }
 
     fn sample(bit_size: usize) -> Self {
-        let mut rng = OsRng::new().unwrap();
+        let mut rng = StdRng::new().unwrap();
         let bytes = (bit_size - 1) / 8 + 1;
-        let mut buf: Vec<u8> = vec![0; bytes];
+	let mut buf = Vec::<u8>::new();
+	buf.resize_with(bytes,Default::default);
         rng.fill_bytes(&mut buf);
         let bn = Self::from_vec(&*buf);
         bn >> (bytes * 8 - bit_size)
@@ -172,7 +174,6 @@ impl Samplable for NumBigInt {
         }
     }
 }
- */
 
     /*
 impl NumberTests for NumBigInt {
