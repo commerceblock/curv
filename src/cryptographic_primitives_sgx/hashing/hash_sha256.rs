@@ -9,7 +9,7 @@ use super::traits::Hash;
 use crate::arithmetic_sgx::traits::Converter;
 use crate::elliptic::curves::traits::{ECPoint, ECScalar};
 
-use digest::Digest;
+use sha2::Digest;
 use sha2::Sha256;
 
 use crate::BigInt;
@@ -19,32 +19,32 @@ pub struct HSha256;
 
 impl Hash for HSha256 {
     fn create_hash(big_ints: &[&BigInt]) -> BigInt {
-        let mut hasher = Sha256::new();
+        let mut hasher = Sha256::default();
 
         for value in big_ints {
             hasher.input(&BigInt::to_vec(value));
         }
 
         let result_hex = hasher.result();
-        BigInt::from(&result_hex[..])
+        BigInt::from_vec(&result_hex[..])
     }
 
     fn create_hash_from_ge(ge_vec: &[&GE]) -> FE {
-        let mut hasher = Sha256::new();
+        let mut hasher = Sha256::default();
         for value in ge_vec {
             hasher.input(&value.pk_to_key_slice());
         }
 
         let result_hex = hasher.result();
-        let result = BigInt::from(&result_hex[..]);
+        let result = BigInt::from_vec(&result_hex[..]);
         ECScalar::from(&result)
     }
 
     fn create_hash_from_slice(byte_slice: &[u8]) -> BigInt {
-        let mut hasher = Sha256::new();
+        let mut hasher = Sha256::default();
         hasher.input(byte_slice);
         let result_hex = hasher.result();
-        BigInt::from(&result_hex[..])
+        BigInt::from_vec(&result_hex[..])
     }
 }
 
@@ -69,7 +69,7 @@ mod tests {
         let big_int1 = BigInt::from(message[1] as i32);
 
         let result = HSha256::create_hash(&[&big_int0, &big_int1]).to_hex();
-        let mut hasher = Sha256::new();
+        let mut hasher = Sha256::default();
         hasher.input(&message);
         let result2 = hex::encode(hasher.result());
         assert_eq!(result, result2);

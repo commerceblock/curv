@@ -12,6 +12,10 @@ use crate::ErrorSS::{self, VerifyShareError};
 use crate::FE;
 use crate::GE;
 
+use std::vec::Vec;
+
+use num_traits::One;
+
 #[derive(Clone, PartialEq, Debug, Serialize, Deserialize)]
 pub struct ShamirSecretSharing {
     pub threshold: usize,   //t
@@ -83,7 +87,8 @@ impl VerifiableSS {
 
     // returns vector of coefficients
     pub fn sample_polynomial(t: usize, coef0: &FE) -> Vec<FE> {
-        let mut coefficients = vec![*coef0];
+	let mut coefficients = Vec::<FE>::new();
+        coefficients.push(*coef0);
         // sample the remaining coefficients randomly using secure randomness
         let random_coefficients: Vec<FE> = (0..t).map(|_| ECScalar::new_random()).collect();
         coefficients.extend(random_coefficients);
@@ -149,8 +154,8 @@ impl VerifiableSS {
                 .map(|i| {
                     let xi = &points[i];
                     let yi = &values[i];
-                    let num: FE = ECScalar::from(&BigInt::one());
-                    let denum: FE = ECScalar::from(&BigInt::one());
+                    let num: FE = ECScalar::from(&One::one());
+                    let denum: FE = ECScalar::from(&One::one());
                     let num = points.iter().zip(0..vec_len).fold(num, |acc, x| {
                         if i != x.1 {
                             acc * x.0
@@ -214,8 +219,8 @@ impl VerifiableSS {
             .collect::<Vec<FE>>();
 
         let xi = &points[index];
-        let num: FE = ECScalar::from(&BigInt::one());
-        let denum: FE = ECScalar::from(&BigInt::one());
+        let num: FE = ECScalar::from(&One::one());
+        let denum: FE = ECScalar::from(&One::one());
         let num = (0..s_len).fold(num, |acc, i| {
             if s[i] != index {
                 acc * points[s[i]]
@@ -253,8 +258,8 @@ mod tests {
         shares_vec.push(secret_shares[3].clone());
         shares_vec.push(secret_shares[4].clone());
         //test reconstruction
-
-        let secret_reconstructed = vss_scheme.reconstruct(&vec![0, 1, 4, 5], &shares_vec);
+	let srv = &[0,1,4,5].to_vec();
+        let secret_reconstructed = vss_scheme.reconstruct(srv, &shares_vec);
         assert_eq!(secret, secret_reconstructed);
     }
 
@@ -271,7 +276,8 @@ mod tests {
         shares_vec.push(secret_shares[4].clone());
         //test reconstruction
 
-        let secret_reconstructed = vss_scheme.reconstruct(&vec![0, 1, 2, 4], &shares_vec);
+	let srv = &[0,1,2,4].to_vec();
+        let secret_reconstructed = vss_scheme.reconstruct(srv, &shares_vec);
 
         assert_eq!(secret, secret_reconstructed);
         // test secret shares are verifiable

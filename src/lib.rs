@@ -18,7 +18,8 @@ extern crate std;
 
 #[cfg(feature = "bigint")]
 extern crate num_bigint_dig as num_bigint;
-#[cfg(feature = "serde")]
+
+#[macro_use]
 extern crate serde;
 
 extern crate num_integer;
@@ -64,8 +65,10 @@ extern crate secp256k1;
 //use sgx_types::*;
 
 //use std::backtrace::{self, PrintFormat};
-
-//extern crate serde_derive;
+#[macro_use]
+extern crate serde_derive;
+#[macro_use]
+extern crate serde_cbor;
 
 
 #[cfg(feature = "ecc")]
