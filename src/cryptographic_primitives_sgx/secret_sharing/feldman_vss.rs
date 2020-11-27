@@ -12,7 +12,7 @@ use crate::ErrorSS::{self, VerifyShareError};
 use crate::FE;
 use crate::GE;
 
-use std::vec::Vec;
+use std::prelude::v1::Vec;
 
 use num_traits::One;
 

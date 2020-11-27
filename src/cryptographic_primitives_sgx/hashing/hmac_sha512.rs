@@ -15,7 +15,7 @@ use sha2::Sha512;
 use zeroize::Zeroize;
 type HmacSha256type = Hmac<Sha512>;
 
-use std::vec::Vec;
+use std::prelude::v1::Vec;
 
 pub struct HMacSha512;
 

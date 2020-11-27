@@ -15,7 +15,7 @@
 */
 
 use sgx_tstd as std;
-use std::vec::Vec;
+use std::prelude::v1::Vec;
 use std::string::String;
 
 

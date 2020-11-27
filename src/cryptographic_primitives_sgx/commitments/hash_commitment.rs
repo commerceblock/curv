@@ -17,7 +17,7 @@ use super::SECURITY_BITS;
 use crate::arithmetic_sgx::traits::{Samplable, Converter};
 use sha3::{Digest, Sha3_256};
 
-use std::vec::Vec;
+use std::prelude::v1::Vec;
 
 //TODO:  using the function with BigInt's as input instead of string's makes it impossible to commit to empty message or use empty randomness
 impl Commitment<BigInt> for HashCommitment {

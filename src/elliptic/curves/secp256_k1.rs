@@ -25,7 +25,7 @@
 #[cfg(not(target_env = "sgx"))]
 extern crate sgx_tstd as std;
 
-use std::vec::Vec;
+use std::prelude::v1::Vec;
 use std::string::String;
 
 use super::traits::{ECPoint, ECScalar};
@@ -105,7 +105,7 @@ impl Secp256k1Point {
     }
 
     pub fn base_point2() -> Secp256k1Point {
-	let s = Secp256k1::new();
+	let s = Secp256k1::without_caps();
 	let mut v = Vec::<u8>::new();
 	v.push(4);
         v.extend(BASE_POINT2_X.as_ref());
@@ -129,7 +129,7 @@ impl ECScalar<SK> for Secp256k1Scalar {
     fn new_random() -> Secp256k1Scalar {
         let mut arr = [0u8; 32];
         thread_rng().fill(&mut arr[..]);
-	let s = Secp256k1::new();
+	let s = Secp256k1::without_caps();
         Secp256k1Scalar {
             purpose: "random",
             fe: SK::from_slice(&s, &arr[0..arr.len()]).unwrap(),
@@ -157,7 +157,7 @@ impl ECScalar<SK> for Secp256k1Scalar {
         let curve_order = FE::q();
         let n_reduced = BigInt::mod_add(n, &BigInt::from(0), &curve_order);
         let mut v = BigInt::to_vec(&n_reduced);
-	let s = Secp256k1::new();
+	let s = Secp256k1::without_caps();
 	
         if v.len() < SECRET_KEY_SIZE {
 	    let mut template = get_default_vec(SECRET_KEY_SIZE - v.len());
@@ -310,7 +310,7 @@ impl Zeroize for Secp256k1Point {
 
 impl ECPoint<PK, SK> for Secp256k1Point {
     fn generator() -> Secp256k1Point {
-	let s = Secp256k1::new();
+	let s = Secp256k1::without_caps();
         let mut v = Vec::<u8>::new();
 	v.push(4);
         v.extend(GENERATOR_X.as_ref());
@@ -354,7 +354,7 @@ impl ECPoint<PK, SK> for Secp256k1Point {
         let mut bytes_array_33 = [0u8; 33];
 
         let byte_len = bytes_vec.len();
-	let s = Secp256k1::new();
+	let s = Secp256k1::without_caps();
         match byte_len {
             33..=63 => {
 		let mut template = get_default_vec(64 - bytes_vec.len());
@@ -430,7 +430,7 @@ impl ECPoint<PK, SK> for Secp256k1Point {
     }
 
     fn scalar_mul(&self, fe: &SK) -> Secp256k1Point {
-	let s = Secp256k1::new();
+	let s = Secp256k1::without_caps();
         let mut new_point = *self;
         new_point
             .ge
@@ -440,7 +440,7 @@ impl ECPoint<PK, SK> for Secp256k1Point {
     }
 
     fn add_point(&self, other: &PK) -> Secp256k1Point {
-	let s = Secp256k1::new();
+	let s = Secp256k1::without_caps();
         Secp256k1Point {
             purpose: "combine",
             ge: self.ge.combine(&s,other).unwrap(),
@@ -506,7 +506,7 @@ impl ECPoint<PK, SK> for Secp256k1Point {
         v.extend(vec_x);
         v.extend(vec_y);
 
-	let s = Secp256k1::new();
+	let s = Secp256k1::without_caps();
 	
         Secp256k1Point {
             purpose: "base_fe",

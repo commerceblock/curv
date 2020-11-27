@@ -39,7 +39,7 @@ use super::traits::{
 use std::borrow::Borrow;
 use std::ptr;
 use std::sync::atomic;
-use std::vec::Vec;
+use std::prelude::v1::Vec;
 use num_traits::{Zero, One};
 
 impl ZeroizeBN for BigInt {
