@@ -16,7 +16,7 @@ use crate::GE;
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct EcKeyPair {
     pub public_share: GE,
-    secret_share: FE,
+    pub secret_share: FE,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]

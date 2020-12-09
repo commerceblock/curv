@@ -39,7 +39,7 @@ use rand::{thread_rng, Rng};
 use secp256k1::constants::{
     CURVE_ORDER, GENERATOR_X, GENERATOR_Y, SECRET_KEY_SIZE, UNCOMPRESSED_PUBLIC_KEY_SIZE,
 };
-use secp256k1::{PublicKey, Secp256k1, SecretKey, VerifyOnly};
+use secp256k1::{PublicKey, Secp256k1, SecretKey, VerifyOnly, All};
 use serde::de;
 use serde::de::{MapAccess, SeqAccess, Visitor};
 use serde::ser::SerializeStruct;
@@ -105,14 +105,13 @@ impl Secp256k1Point {
     }
 
     pub fn base_point2() -> Secp256k1Point {
-	let s = Secp256k1::without_caps();
 	let mut v = Vec::<u8>::new();
 	v.push(4);
         v.extend(BASE_POINT2_X.as_ref());
         v.extend(BASE_POINT2_Y.as_ref());
         Secp256k1Point {
             purpose: "random",
-            ge: PK::from_slice(&s, &v).unwrap(),
+            ge: PK::from_slice(get_context_all(), &v).unwrap(),
         }
     }
 }
@@ -129,10 +128,9 @@ impl ECScalar<SK> for Secp256k1Scalar {
     fn new_random() -> Secp256k1Scalar {
         let mut arr = [0u8; 32];
         thread_rng().fill(&mut arr[..]);
-	let s = Secp256k1::without_caps();
         Secp256k1Scalar {
             purpose: "random",
-            fe: SK::from_slice(&s, &arr[0..arr.len()]).unwrap(),
+            fe: SK::from_slice(get_context_all(), &arr[0..arr.len()]).unwrap(),
         }
     }
 
@@ -157,7 +155,6 @@ impl ECScalar<SK> for Secp256k1Scalar {
         let curve_order = FE::q();
         let n_reduced = BigInt::mod_add(n, &BigInt::from(0), &curve_order);
         let mut v = BigInt::to_vec(&n_reduced);
-	let s = Secp256k1::without_caps();
 	
         if v.len() < SECRET_KEY_SIZE {
 	    let mut template = get_default_vec(SECRET_KEY_SIZE - v.len());
@@ -167,7 +164,7 @@ impl ECScalar<SK> for Secp256k1Scalar {
 
         Secp256k1Scalar {
             purpose: "from_big_int",
-            fe: SK::from_slice(&s, &v).unwrap(),
+            fe: SK::from_slice(get_context_all(), &v).unwrap(),
         }
     }
 
@@ -310,14 +307,13 @@ impl Zeroize for Secp256k1Point {
 
 impl ECPoint<PK, SK> for Secp256k1Point {
     fn generator() -> Secp256k1Point {
-	let s = Secp256k1::without_caps();
         let mut v = Vec::<u8>::new();
 	v.push(4);
         v.extend(GENERATOR_X.as_ref());
         v.extend(GENERATOR_Y.as_ref());
         Secp256k1Point {
             purpose: "base_fe",
-            ge: PK::from_slice(&s, &v).unwrap(),
+            ge: PK::from_slice(get_context_all(), &v).unwrap(),
         }
     }
 
@@ -354,7 +350,6 @@ impl ECPoint<PK, SK> for Secp256k1Point {
         let mut bytes_array_33 = [0u8; 33];
 
         let byte_len = bytes_vec.len();
-	let s = Secp256k1::without_caps();
         match byte_len {
             33..=63 => {
 		let mut template = get_default_vec(64 - bytes_vec.len());
@@ -366,7 +361,7 @@ impl ECPoint<PK, SK> for Secp256k1Point {
                 let bytes_slice = &template[..];
 
                 bytes_array_65.copy_from_slice(&bytes_slice[0..65]);
-                let result = PK::from_slice(&s, &bytes_array_65);
+                let result = PK::from_slice(get_context_all(), &bytes_array_65);
                 let test = result.map(|pk| Secp256k1Point {
                     purpose: "random",
                     ge: pk,
@@ -384,7 +379,7 @@ impl ECPoint<PK, SK> for Secp256k1Point {
                 let bytes_slice = &template[..];
 
                 bytes_array_33.copy_from_slice(&bytes_slice[0..33]);
-                let result = PK::from_slice(&s, &bytes_array_33);
+                let result = PK::from_slice(get_context_all(), &bytes_array_33);
                 let test = result.map(|pk| Secp256k1Point {
                     purpose: "random",
                     ge: pk,
@@ -400,7 +395,7 @@ impl ECPoint<PK, SK> for Secp256k1Point {
                 let bytes_slice = &template[..];
 
                 bytes_array_65.copy_from_slice(&bytes_slice[0..65]);
-                let result = PK::from_slice(&s, &bytes_array_65);
+                let result = PK::from_slice(get_context_all(), &bytes_array_65);
                 let test = result.map(|pk| Secp256k1Point {
                     purpose: "random",
                     ge: pk,
@@ -430,20 +425,18 @@ impl ECPoint<PK, SK> for Secp256k1Point {
     }
 
     fn scalar_mul(&self, fe: &SK) -> Secp256k1Point {
-	let s = Secp256k1::without_caps();
         let mut new_point = *self;
         new_point
             .ge
-            .mul_assign(get_context(), &SK::from_slice(&s, &fe[..]).expect("SK from slice expected"))
+            .mul_assign(get_context_all(), &SK::from_slice(get_context_all(), &fe[..]).expect("SK from slice expected"))
             .expect("Assignment expected");
         new_point
     }
 
     fn add_point(&self, other: &PK) -> Secp256k1Point {
-	let s = Secp256k1::without_caps();
         Secp256k1Point {
             purpose: "combine",
-            ge: self.ge.combine(&s,other).unwrap(),
+            ge: self.ge.combine(get_context_all(),other).unwrap(),
         }
     }
 
@@ -505,23 +498,30 @@ impl ECPoint<PK, SK> for Secp256k1Point {
         v.push(4);
         v.extend(vec_x);
         v.extend(vec_y);
-
-	let s = Secp256k1::without_caps();
 	
         Secp256k1Point {
             purpose: "base_fe",
-            ge: PK::from_slice(&s, &v).unwrap(),
+            ge: PK::from_slice(get_context_all(), &v).unwrap(),
         }
     }
 }
 
-static mut CONTEXT: Option<Secp256k1<VerifyOnly>> = None;
-pub fn get_context() -> &'static Secp256k1<VerifyOnly> {
+static mut CONTEXT: Option<Secp256k1<All>> = None;
+pub fn get_context() -> &'static Secp256k1<All> {
     static INIT_CONTEXT: Once = Once::new();
     INIT_CONTEXT.call_once(|| unsafe {
-        CONTEXT = Some(Secp256k1::verification_only());
+        CONTEXT = Some(Secp256k1::new());
     });
     unsafe { CONTEXT.as_ref().unwrap() }
+}
+
+static mut CONTEXT_ALL: Option<Secp256k1<All>> = None;
+pub fn get_context_all() -> &'static Secp256k1<All> {
+    static INIT_CONTEXT_ALL: Once = Once::new();
+    INIT_CONTEXT_ALL.call_once(|| unsafe {
+        CONTEXT_ALL = Some(Secp256k1::new());
+    });
+    unsafe { CONTEXT_ALL.as_ref().unwrap() }
 }
 
 #[cfg(feature = "merkle")]
