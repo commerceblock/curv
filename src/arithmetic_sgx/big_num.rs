@@ -27,6 +27,7 @@ use super::traits::{
     Samplable,
     ZeroizeBN,
     EGCD,
+    GCD,
     BitManipulation,
 };
 

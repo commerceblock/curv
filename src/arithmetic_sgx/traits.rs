@@ -61,6 +61,14 @@ where
     fn egcd(a: &Self, b: &Self) -> (Self, Self, Self);
 }
 
+
+pub trait GCD
+where
+    Self: Sized,
+{
+    fn gcd(a: &Self, b: &Self) -> (Self, Self, Self);
+}
+
 pub trait BitManipulation {
     fn bit_length(self: &Self) -> usize; 
     fn set_bit(self: &mut Self, bit: usize, bit_val: bool);
