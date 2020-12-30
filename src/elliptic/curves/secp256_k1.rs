@@ -68,8 +68,8 @@ pub struct Secp256k1Scalar {
 }
 #[derive(Clone, Debug, Copy)]
 pub struct Secp256k1Point {
-    purpose: &'static str,
-    ge: PK,
+    pub purpose: &'static str,
+    pub ge: PK,
 }
 pub type GE = Secp256k1Point;
 pub type FE = Secp256k1Scalar;
