@@ -62,7 +62,10 @@ impl Converter for NumBigInt {
 
 impl Modulo for NumBigInt {
     fn mod_pow(base: &Self, exponent: &Self, modulus: &Self) -> Self {
-        base.modpow(exponent, modulus)
+        match exponent.sign() {
+            Sign::Minus => Self::mod_inv(base, modulus).modpow(&(-exponent), modulus),            
+            _ => base.modpow(exponent, modulus),
+        }
     }
 
     fn mod_mul(a: &Self, b: &Self, modulus: &Self) -> Self {
@@ -390,6 +393,15 @@ mod tests {
         let b = BigInt::from(3);
         let modulo = BigInt::from(3);
         let res = BigInt::from(2);
+        assert_eq!(res, BigInt::mod_pow(&a, &b, &modulo));
+    }
+
+    #[test]
+    fn test_mod_pow_neg() {
+        let a = BigInt::from(2);
+        let b = BigInt::from(-6);
+        let modulo = BigInt::from(3);
+        let res = BigInt::from(1);
         assert_eq!(res, BigInt::mod_pow(&a, &b, &modulo));
     }
 
