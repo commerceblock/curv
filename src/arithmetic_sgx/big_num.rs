@@ -99,7 +99,10 @@ impl Converter for NumBigInt {
 
 impl Modulo for NumBigInt {
     fn mod_pow(base: &Self, exponent: &Self, modulus: &Self) -> Self {
-        base.modpow(exponent, modulus)
+	match exponent.sign() {
+            Sign::Minus => Self::mod_inv(base, modulus).modpow(&(-exponent), modulus),            
+            _ => base.modpow(exponent, modulus),
+        }
     }
 
     fn mod_mul(a: &Self, b: &Self, modulus: &Self) -> Self {
